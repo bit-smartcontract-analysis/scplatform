@@ -50,17 +50,17 @@ def front_context_processor():
         return {}
 
 
+# @bp.route('/')
+# def open_view():
+#     return render_template("front/open.html")
+
+
+# @bp.route('/frontView')
+# def front_view():
+#     return redirect("http://localhost:8080/", code=302)
+
+
 @bp.route('/')
-def open_view():
-    return render_template("front/open.html")
-
-
-@bp.route('/frontView')
-def front_view():
-    return redirect("http://localhost:8080/", code=302)
-
-
-@bp.route('/index')
 def index():
     sort = request.args.get("st", type=int, default=1)
     board_id = request.args.get("bd", type=int, default=None)
