@@ -1,0 +1,36 @@
+/gradle/wrapper/gradle-wrapper.properties
+##----------Android----------
+# build
+*.apk
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+build/
+
+# gradle
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+build/
+
+local.properties
+
+##----------idea----------
+*.iml
+.idea/*
+*.ipr
+*.iws
+
+# Android Studio Navigation editor temp files
+.navigation/
+
+##----------Other----------
+# osx
+*~
+SC_analysis/*.py~
+SC_analysis/.DS_Store
+gradle.properties
+**/__pycache__
+*.xml

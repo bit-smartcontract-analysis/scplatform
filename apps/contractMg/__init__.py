@@ -1,0 +1,1 @@
+from .contractMg import bp as contract_bp

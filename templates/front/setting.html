@@ -1,0 +1,51 @@
+{% extends "front/base.html" %}
+
+{% block title %}
+个人设置 - 长安链智能合约平台
+{% endblock %}
+
+{% block head %}
+  <script src="{{ url_for('static', filename='front/js/setting.js') }}"></script>
+ <link rel="stylesheet" href="{{ url_for('static', filename='front/index.css') }}">
+    <style>
+    body{
+      background-color: #f3f3f3;
+    }
+    .setting-group {
+      width: 800px;
+      background-color: #ffffff;
+      margin: 0 auto;
+      padding: 50px;
+    }
+    #avatar-img{
+      width: 140px;
+      height: 140px;
+    }
+  </style>
+{% endblock %}
+
+{% block body %}
+    <div class="setting-group">
+      <h1>{{ user.username }}设置</h1>
+      <div style="height: 20px;"></div>
+      <form>
+        <div class="form-group">
+          <label for="exampleInputEmail1">邮箱：</label>
+          <input type="email" class="form-control" value="{{ user.email }}" readonly>
+        </div>
+        <div class="form-group">
+          <label>头像：</label>
+          <div class="input-group">
+            <img src="{{ url_for('media.get_avatar', filename=user.avatar) }}" alt="..." class="img-circle" id="avatar-img">
+            <input type="file" id="avatar-input" accept="image/jpeg, image/png">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">个性签名：</label>
+          <input type="text" class="form-control" id="signagure-input" value="{{ user.signature or "" }}">
+        </div>
+        <button type="submit" id="submit-btn" class="btn btn-primary">保存</button>
+      </form>
+    </div>
+{% endblock %}
+

@@ -1,0 +1,1 @@
+from .views import bp as sc_bp

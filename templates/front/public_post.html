@@ -1,0 +1,38 @@
+{% extends "front/base.html" %}
+
+{% block title %}
+  发布帖子 - 长安链智能合约平台
+{% endblock %}
+
+{% block head %}
+  <script src="{{ url_for('static', filename='lib/wangEditor/wangEditor.min.js') }}"> </script>
+  <script src="{{ url_for('static', filename='front/js/public_post.js') }}"> </script>
+{% endblock %}
+
+{% block body %}
+    <h1 style="text-align: center; padding: 20px;">发布帖子</h1>
+    <form action="" method="post">
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon">标题</span>
+          <input type="text" class="form-control" name="title">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="input-group">
+          <span class="input-group-addon">板块</span>
+          <select name="board_id" class="form-control">
+            {% for board in boards %}
+            <option value="{{ board.id }}">{{ board.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div id="editor"></div>
+      </div>
+      <div class="form-group">
+        <button class="btn btn-danger" id="submit-btn">发布帖子</button>
+      </div>
+    </form>
+{% endblock %}

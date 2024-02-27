@@ -1,0 +1,10 @@
+contract_name,bugs_name,timestamp,logs
+Delegation.sol,Reentrancy,2024-01-22_00-09-58,"INFO:Slither:Compilation warnings/errors on /data/sample/Delegation.sol:
+[91m/data/sample/Delegation.sol:33:13: Error: Expected identifier but got '('[0m
+    fallback() external {
+            ^
+
+INFO:SlitherSolcParsing:No contract were found in /data/sample/Delegation.sol, check the correct compilation
+WARNING:Slither:[91mNo contract was analyzed[0m
+INFO:Slither:/data/sample/Delegation.sol analyzed (0 contracts), 0 result(s) found
+"

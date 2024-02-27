@@ -1,0 +1,8 @@
+contract_name,bugs_name,timestamp,logs
+proxy.sol,Reentrancy,2024-01-22_01-19-25,"INFO:CryticCompile:Compilation warnings/errors on /data/media/contracts/proxy.sol:
+/data/media/contracts/proxy.sol:13:14: Error: Expected identifier, got 'LParen'
+  constructor() public {
+             ^
+
+CRITICAL:root:Solidity compilation failed. Please use -ce flag to see the detail.
+"

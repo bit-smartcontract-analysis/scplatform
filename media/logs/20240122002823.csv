@@ -1,0 +1,3 @@
+contract_name,bugs_name,timestamp,logs
+proxy.sol,Reentrancy,2024-01-22_00-28-23,"CRITICAL:root:Solidity compilation failed. Please use -ce flag to see the detail.
+"

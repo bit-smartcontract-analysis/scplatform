@@ -1,0 +1,58 @@
+{% extends "front/base.html" %}
+
+{% block title %}
+注册 - 长安链智能合约平台
+{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='front/css/signbase.css') }}">
+  <script src="{{ url_for('static', filename='front/js/register.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+  <div class="outer-box">
+            <div class="logo-box">
+                <a href="/">
+                    <img src="{{ url_for('static', filename='front/images/logo2.png') }}" alt="">
+                </a>
+            </div>
+            <h2 class="page-title">
+                长安链智能合约平台-登录
+            </h2>
+            <div class="sign-box">
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="email" class="form-control" name="email" placeholder="邮箱">
+                        <span class="input-group-btn">
+                            <button id="email-captcha-btn" class="btn btn-default" >发送验证码</button>
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="email-captcha" placeholder="邮箱验证码">
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="username" placeholder="用户名">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" name="password" placeholder="密码">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-control" name="repeat-password" placeholder="确认密码">
+                </div>
+                <div class="form-group">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="graph-captcha" placeholder="图形验证码">
+                        <span class="input-group-addon captcha-addon">
+                            <img id="captcha-img" class="captcha-img" src="{{ url_for('front.graph_captcha') }}" alt="">
+                        </span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button class="btn btn-warning btn-block" id="submit-btn">立即注册</button>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+

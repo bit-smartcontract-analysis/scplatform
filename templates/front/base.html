@@ -1,0 +1,66 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script src="http://cdn.bootcss.com/jquery/3.1.1/jquery.min.js"></script>
+    <link href="http://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename='front/js/zlajax.js') }}"></script>
+    <script src="{{ url_for('static', filename='front/js/zlparam.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='front/css/front_base.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/">长安链-智能合约检测平台</a>
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                      <li class="{{ 'active' if request.endpoint == 'front.index' else '' }}"><a href="/">首页<span class="sr-only">(current)</span></a></li>
+                      <li class="{{ 'active' if request.endpoint == 'scAnalysis.index' else '' }}"><a href="{{ url_for('scAnalysis.index')}}">检测平台<span class="sr-only"></span></a></li>
+                </ul>
+                <form class="navbar-form navbar-left">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="请输入关键字">
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    {% if user %}
+                      <li class="dropdown">
+                          <a href="#" class="dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            {{ user.username }}
+                              <span class="caret"></span>
+                          </a>
+                          <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                              <li><a href="{{ url_for('front.cms') }}">后台管理</a></li>
+                              <li><a href="{{ url_for('front.setting') }}">设置</a></li>
+                              <li><a href="{{ url_for('front.logout') }}">注销</a></li>
+                          </ul>
+                      </li>
+                    {% else %}
+                      <li><a href="{{ url_for('front.login')}}">登录</a></li>
+                      <li><a href="{{ url_for('front.register')}}">注册</a></li>
+                    {% endif %}
+                </ul>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+    <div class="main-container">
+        {% block body %}{% endblock %}
+    </div>
+</body>
+
+</html>

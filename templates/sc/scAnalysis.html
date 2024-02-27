@@ -1,0 +1,97 @@
+{% extends "front/base.html" %}
+
+{% block title %}
+  工具推荐
+{% endblock %}
+
+{% block head %}
+  <script src = "{{ url_for('static', filename='sc/css/jquery.3.6.min.js') }}"></script>
+  <script src = "{{ url_for('static', filename='sc/js/toolCheck.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static',filename='sc/css/detail.css') }}">
+{% endblock %}
+
+{% block body %}
+   <form>
+      <div class="form-group">
+        <div class="form-group mt-4">
+          <h4>1. 输入需要检测的智能合约</h4>
+          <div class="file">
+            <!-- Upload form -->
+            <form id="upload-form" method="post" enctype="multipart/form-data">
+              <input class="file-input" type="file" id="file" name="file_path">
+              <button class="upload-button"  type="button" id="file_path-btn">上传</button>
+            </form>
+          </div>
+        </div>
+        <div class="form-group mt-4">
+          <h4>2. 合约所使用的编程语言</h4>
+          <div class="input-group">
+            <select class="custom-select" id="select-prolanguage" name="select-prolanguage">
+              <option selected value="0">-- 请选择 --</option>
+              <option value="Solidity">Solidity</option>
+              <option value="Rust">Rust</option>
+              <option value="C">C</option>
+              <option value="C++">C++</option>
+              <option value="Go">Golang</option>
+              <option value="Java">Java</option>
+              <option value="TinyGo">TinyGo</option>
+            </select>
+            <button class="btn btn-outline-secondary" type="button" id="select_prolang-btn">导入</button>
+          </div>
+        </div>
+        <div class="form-group mt-4">
+          <h4>3. 选择检测漏洞的工具</h4>
+          <div class="checkbox-grid" id="checkbox-grid"></div>
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-outline-secondary btn-green" type="button" id="selectTool-btn">提交选择</button>
+          </div>
+          <!-- <div id="selected-tools-container"></div> -->
+        </div>
+        <h4>4. 预估检测所需时间(单位: 秒)</h4>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-outline-secondary btn-green" type="button" id="timeDetect-btn">开始计算</button>
+        </div>
+        <ul id="time-container"></ul>
+        <div class="form-group mt-4">
+          <h4>5. 输入超时间</h4>
+          <div class="input-group">
+            <input type="text" class="form-extratime" placeholder="单位s" name="file_path">
+            <button class="btn btn-outline-secondary" type="button" id="select_prolang-btn">导入</button>
+          </div>
+          <p>当时间超过这个值时，检测自动中断</p>
+        </div>
+      </div>
+      <div class="form-group mt-4">
+        <h4>6. 漏洞检测结果</h4>
+        <div class="d-flex justify-content-end">
+          <button class="btn btn-outline-secondary btn-red" type="button" id="process-btn">开始检测</button>
+        </div>
+        <div id="progress-bar-container">
+          <div id="progress-bar"></div>
+        </div>
+        <ul id="log-container"></ul>
+      </div>
+      <div class="tool-form">
+          <select class="custom-select" id="item-type">
+              <option value="mythril">mythril</option>
+              <option value="oyente">oyente</option>
+              <option value="slither">slither</option>
+              <option value="conkas">conkas</option>
+              <option value="solhint">solhint</option>
+              <option value="confuzzius">confuzzius</option>
+              <option value="security">security</option>
+              <option value="sfuzz">sfuzz</option>
+              <option value="osiris">osiris</option>
+              <option value="osiris">honeybadger</option>
+              <!-- Add more options as needed -->
+          </select>
+          <button id="execute-tool-btn">Execute Tool</button>
+      </div>
+      <div id="response-block">
+        <div id="message"></div>
+        <div id="exit_code"></div>
+        <div id="execution_time"></div>
+        <pre id="logs"></pre>
+      </div>>
+    </form>
+{% endblock %}

@@ -1,0 +1,47 @@
+contract_name,bugs_name,timestamp,logs
+SimpleDAO.sol,Reentrancy,2024-01-22_19-26-30,"INFO:CryticCompile:Compilation warnings/errors on /data/media/contracts/SimpleDAO.sol:
+/data/media/contracts/SimpleDAO.sol:12:3: Warning: No visibility specified. Defaulting to ""public"".
+  function donate(address to) payable {
+  ^
+Spanning multiple lines.
+/data/media/contracts/SimpleDAO.sol:16:3: Warning: No visibility specified. Defaulting to ""public"".
+  function withdraw(uint amount) {
+  ^
+Spanning multiple lines.
+/data/media/contracts/SimpleDAO.sol:24:3: Warning: No visibility specified. Defaulting to ""public"".
+  function queryCredit(address to) returns (uint){
+  ^
+Spanning multiple lines.
+/data/media/contracts/SimpleDAO.sol:19:7: Warning: Unused local variable.
+      bool res = msg.sender.call.value(amount)();
+      ^------^
+/data/media/contracts/SimpleDAO.sol:24:3: Warning: Function state mutability can be restricted to view
+  function queryCredit(address to) returns (uint){
+  ^
+Spanning multiple lines.
+
+INFO:root:contract /data/media/contracts/SimpleDAO.sol:SimpleDAO:
+INFO:symExec:	============ Results ===========
+INFO:symExec:	  EVM Code Coverage: 			 99.7%
+INFO:symExec:	  Integer Underflow: 			 True
+INFO:symExec:	  Integer Overflow: 			 True
+INFO:symExec:	  Parity Multisig Bug 2: 		 False
+INFO:symExec:	  Callstack Depth Attack Vulnerability:  True
+INFO:symExec:	  Transaction-Ordering Dependence (TOD): False
+INFO:symExec:	  Timestamp Dependency: 		 False
+INFO:symExec:	  Re-Entrancy Vulnerability: 		 True
+INFO:symExec:/data/media/contracts/SimpleDAO.sol:19:18: Warning: Integer Underflow.
+      bool res = msg.sender.call.value(amount)()
+Integer Underflow occurs if:
+    credit[msg.sender] = 0
+    amount = 0
+INFO:symExec:/data/media/contracts/SimpleDAO.sol:13:5: Warning: Integer Overflow.
+    credit[to] += msg.value
+Integer Overflow occurs if:
+    credit[to] = 1
+INFO:symExec:/data/media/contracts/SimpleDAO.sol:19:18: Warning: Callstack Depth Attack Vulnerability.
+      bool res = msg.sender.call.value(amount)()
+INFO:symExec:/data/media/contracts/SimpleDAO.sol:19:18: Warning: Re-Entrancy Vulnerability.
+      bool res = msg.sender.call.value(amount)()
+INFO:symExec:	====== Analysis Completed ======
+"

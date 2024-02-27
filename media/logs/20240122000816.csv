@@ -1,0 +1,8 @@
+contract_name,bugs_name,timestamp,logs
+buggy_2.sol,Reentrancy,2024-01-22_00-08-16,"ERROR:root:Error in /data/sample/buggy_2.sol
+ERROR:root:Traceback (most recent call last):
+  File ""/usr/local/lib/python3.6/dist-packages/slither_analyzer-0.6.1-py3.6.egg/slither/__main__.py"", line 586, in main_impl
+    raise Exception(""Unrecognised file/dir path: '#{filename}'"".format(filename=filename))
+Exception: Unrecognised file/dir path: '#/data/sample/buggy_2.sol'
+
+"

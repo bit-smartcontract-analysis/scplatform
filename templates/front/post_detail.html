@@ -1,0 +1,55 @@
+{% extends "front/base.html" %}
+
+{% block title %}
+{{ post.totle }}- 长安链智能合约
+{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='lib/highlight/styles/github-dark-dimmed.min.css') }}">
+  <script src="{{ url_for('static', filename='lib/highlight/highlight.min.js') }}"></script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='front/css/post_detail.css') }}">
+  <script src="{{ url_for('static', filename='front/js/post_detail.js') }}"> </script>
+{% endblock %}
+
+{% block body %}
+  <div class="post-container">
+    <h2>{{ post.title }}</h2>
+    <p class="post-info-group">
+      <span>发表时间：{{ post.create_time }}</span>
+      <span>作者：{{ post.author.username }}</span>
+      <span>所属板块：{{ post.board.name }}</span>
+      <span>评论数：{{ comment_count }}</span>
+    </p>
+    <div class="post-content">
+      {{ post.content|safe }}
+    </div>
+  </div>
+  <div class="comment-group">
+  <h3>评论列表</h3>
+    <ul class="comment-list-group">
+      {% for comment in post.comments %}
+      <li>
+        <div class="avatar-group">
+          <img src="{{ url_for('media.get_avatar', filename=comment.author.avatar) }}" alt="">
+        </div>
+        <div class="comment-content">
+          <p class="author-info">
+            <span>{{ comment.author.username }}</span>
+            <span>{{ comment.create_time }}</span>
+          </p>
+          <p class="comment-txt">
+            {{ comment.content }}
+          </p>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  <div class="add-comment-group">
+      <h3>发表评论</h3>
+      <textarea name="comment" id="comment-textarea" style="width: 100%; resize:vertical;"></textarea>
+      <div class="comment-btn-group">
+        <button class="btn btn-primary" id="comment-btn" data-post-id="{{ post.id }}" data-user-id="{{ user.id }}">发表评论</button>
+      </div>
+    </div>
+{% endblock %}

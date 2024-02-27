@@ -1,0 +1,39 @@
+
+.file:hover {
+    background: #AADFFD;
+    border-color: #78C3F3;
+    color: #004974;
+    text-decoration: none;
+}
+
+.ufile select {
+    margin-top: -40px;
+    padding: 5px;
+    height: 52px;
+    margin-left: -1px;
+    width: 300px;
+}
+
+.file-input {
+    position: relative;
+    display: inline-block;
+    background: #D0EEFF;
+    border: 1px solid #99D3F5;
+    border-radius: 12px;
+    padding: 4px 12px;
+    overflow: hidden;
+    color: #1E88C7;
+    text-decoration: none;
+    text-indent: 0;
+    line-height: 40px;
+
+}
+
+.upload-button{
+    background: #00aeec;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+}
+
+
