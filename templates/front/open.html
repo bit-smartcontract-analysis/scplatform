@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="{{ url_for('static', filename='front/js/zlajax.js') }}"></script>
+    <script src="{{ url_for('static', filename='front/js/zlparam.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='front/css/front_base.css') }}">
     <title>长安链平台首页</title>
     <style>
         :root{
@@ -148,7 +151,7 @@
     <div class="container">
         <div class="split left">
             <h1>长安链-智能检测平台 首页</h1>
-            <a href="/frontView" class="button">登录开始</a>
+            <a href="{{url_for('front.cms')}}" class="button">登录开始</a>
         </div>
         <div class="split right">
          <p>
