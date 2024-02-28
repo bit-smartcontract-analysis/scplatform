@@ -55,9 +55,9 @@ def front_context_processor():
 #     return render_template("front/open.html")
 
 
-# @bp.route('/frontView')
-# def front_view():
-#     return redirect("http://localhost:8080/", code=302)
+@bp.route('/frontView')
+def front_view():
+    return redirect("cms/index.html", code=302)
 
 
 @bp.route('/')
