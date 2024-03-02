@@ -1,5 +1,6 @@
 # 使用脚本执行工作的代码放在toolExecute.py文件中
 import csv
+import re
 
 from flask import (
     Blueprint,
@@ -667,3 +668,197 @@ def save_to_csv(contract_name, bugs_name, logs):
         writer.writerow(field_names)
         writer.writerow(data)
 
+
+@bp.post("/contractsAnalyze/slither")
+def analyzeContracts_slither():
+    # Upload contracts
+    form = UploadContractForm(request.files)
+    if form.validate():
+        file = form.file.data
+        filename = file.filename
+        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+        file.save(contract_path)
+        # return restful.ok(data={"contract_url": filename})
+    else:
+        message = form.messages[0]
+
+    # analyze contracts
+    client = docker.from_env()
+    contract = filename
+    if not contract:
+        return jsonify({"error": "Contract not specified"}), 400
+    try:
+        host_path = project_root_path
+        contract_path = f"/data/media/tmpContracts/{contract}"
+        image_name = "smartbugs/slither:latest"
+        image = None
+
+        # Check if the image exists
+        for img in client.images.list():
+            if image_name in img.tags:
+                image = img
+                break
+
+        # If not, pull the image
+        if image is None:
+            client.images.pull(image_name)
+
+        # Define the volume mapping
+        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+
+        # Define the command
+        command = f"slither {contract_path} --json /output.json"
+
+        # Create and run the container
+        container = client.containers.create(image_name, command=command, volumes=volumes)
+        start_time = time.time()
+        container.start()
+
+        # Wait for the container to finish
+        result = container.wait()
+
+        # Retrieve the logs
+        logs = container.logs().decode('utf-8')
+
+        # Optionally, stop and remove the container
+        container.stop()
+        end_time = time.time()
+        container.remove()
+        execution_time = end_time - start_time
+        bugs = "Reentrancy"
+        save_to_csv(contract, bugs, logs)
+        vuln_list = process_slither_data(logs)
+        # print(log_list)
+        return jsonify({"message": "Analysis completed", "exit_code": result['StatusCode'], "logs": logs, "vuln_list": vuln_list, "time": execution_time}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@bp.post("/contractsAnalyze/mythril")
+def analyzeContracts_mythril():
+    # Upload contracts
+    form = UploadContractForm(request.files)
+    if form.validate():
+        file = form.file.data
+        filename = file.filename
+        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+        file.save(contract_path)
+        # return restful.ok(data={"contract_url": filename})
+    else:
+        message = form.messages[0]
+
+    # analyze contracts
+    client = docker.from_env()
+    contract = filename
+    if not contract:
+        return jsonify({"error": "Contract not specified"}), 400
+    # print("contract: ", contract)
+    # print("start")
+    try:
+        host_path = project_root_path
+        contract_path = f"/data/media/tmpContracts/{contract}"
+        image_name = "smartbugs/mythril:0.23.15"
+        image = None
+
+        for img in client.images.list():
+            if image_name in img.tags:
+                image = img
+                break
+        if image is None:
+            client.images.pull(image_name)
+
+        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+        command = f"analyze -o json {contract_path}"
+        container = client.containers.create(image_name, command=command, volumes=volumes)
+        start_time = time.time()  # Record start time
+        container.start()
+        result = container.wait()
+        logs = container.logs().decode('utf-8')
+        container.stop()
+        end_time = time.time()
+        container.remove()
+        execution_time = end_time - start_time
+        bugs = "Reentrancy"
+        print(logs)
+        save_to_csv(contract, bugs, logs)
+        return jsonify({"message": "Analysis completed", "exit_code": result['StatusCode'], "logs": logs, "time": execution_time}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@bp.post("/contractsAnalyze/evulhunter")
+def analyzeContracts_evulhunter():
+    # Upload contracts
+    form = UploadContractForm(request.files)
+    if form.validate():
+        file = form.file.data
+        filename = file.filename
+        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+        file.save(contract_path)
+        # return restful.ok(data={"contract_url": filename})
+    else:
+        message = form.messages[0]
+
+    # analyze contracts
+    client = docker.from_env()
+    contract = filename
+    if not contract:
+        return jsonify({"error": "Contract not specified"}), 400
+    try:
+        host_path = project_root_path
+        contract_path = f"/data/media/tmpContracts/{contract}"
+        image_name = "weiboot/evulhunter:v0.1"
+        image = None
+
+        # Check if the image exists
+        for img in client.images.list():
+            if image_name in img.tags:
+                image = img
+                break
+
+        # If not, pull the image
+        if image is None:
+            client.images.pull(image_name)
+            print("pulling " + image_name)
+
+        # Define the volume mapping
+        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+
+        # Create the container without starting it
+        container = client.containers.create(image_name, volumes=volumes, tty=True)
+
+        # Start the container
+        start_time = time.time()
+        container.start()
+
+        # Execute the Python command inside the container
+        exit_code, output = container.exec_run(f"python3 EOSVulDetector.py -i \"{contract_path}\"  -t 2 -o \"test.txt\"")
+        # Optionally, stop and remove the container
+        container.stop()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        container.remove()
+
+        print(output.decode('utf-8'))
+
+        return jsonify({"message": "Analysis completed", "exit_code": exit_code, "logs": output.decode('utf-8'), "time": execution_time}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+def process_slither_data(log_data):
+    detector_blocks = log_data.split('INFO:Detectors:')[1:]
+
+    file_path_pattern = r"/data/media/tmpContracts/[\w\.]+"
+
+    # Clean and extract information from each block
+    extracted_info = []
+    for block in detector_blocks:
+        # Remove ANSI escape sequences for colors
+        clean_block = re.sub(r'\x1b\[\d+m', '', block).strip()
+        # Remove backslashes for new lines and tabs, replace with actual new lines and tabs
+        clean_block = clean_block.replace('\\n', '\n').replace('\\t', '\t')
+        clean_block = re.sub(file_path_pattern, '', clean_block)
+        extracted_info.append(clean_block)
+
+    return extracted_info

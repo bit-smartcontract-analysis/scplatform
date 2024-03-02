@@ -53,6 +53,8 @@ POST_IMAGE_SAVE_PATH = os.path.join(BASE_DIR, "media", "post")
 BANNER_IMAGE_SAVE_PATH = os.path.join(BASE_DIR, "media", "banner")
 # 智能合约存放路径
 CONTRACT_IMAGE_SAVE_PATH = os.path.join(BASE_DIR, "media", "contracts")
+# 智能合约临时存放路径
+TMP_CONTRACT_IMAGE_SAVE_PATH = os.path.join(BASE_DIR, "media", "tmpContracts")
 
 CONTRACT_LOGS_SAVE_PATH = os.path.join(BASE_DIR, "media", "logs")
 
