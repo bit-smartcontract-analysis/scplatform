@@ -50,9 +50,9 @@ def front_context_processor():
         return {}
 
 
-# @bp.route('/')
-# def open_view():
-#     return render_template("front/open.html")
+@bp.route('/')
+def open_view():
+    return render_template("front/open.html")
 
 
 @bp.route('/frontView')
