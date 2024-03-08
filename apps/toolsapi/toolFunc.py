@@ -1,6 +1,5 @@
 # 使用脚本执行工作的代码放在toolExecute.py文件中
-import csv
-from .process import process_slither_data, process_log
+from .process import process_slither_data, process_log_slither, save_to_csv, process_log_evulhunter
 
 from flask import (
     Blueprint,
@@ -16,7 +15,7 @@ import os
 from .forms import UploadContractForm
 from utils import restful
 import time
-from datetime import datetime
+
 
 bp = Blueprint("toolFunc", __name__, url_prefix="/toolFunc")
 # client = docker.from_env()
@@ -518,73 +517,51 @@ def run_honeybadger_analysis():
 
 @bp.route("/run/wana_rust", methods=['POST', 'GET'])
 def run_wana_analysis():
-    # client = docker.from_env()
-    # contract = request.form.get("contract")
-    # if not contract:
-    #     return jsonify({"error": "Contract not specified"}), 400
-    # try:
-    #     host_path = project_root_path
-    #     contract_path = f"/data/media/contracts/{contract}"
-    #     image_name = "weiboot/wana:v1.0"
-    #     image = None
-    #
-    #     # Check if the image exists
-    #     for img in client.images.list():
-    #         if image_name in img.tags:
-    #             image = img
-    #             break
-    #
-    #     # If not, pull the image
-    #     if image is None:
-    #         client.images.pull(image_name)
-    #         print("pulling " + image_name)
-    #
-    #     # Define the volume mapping
-    #     volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
-    #
-    #     # Create the container without starting it
-    #     container = client.containers.create(image_name, volumes=volumes, tty=True)
-    #
-    #     # Start the container
-    #     start_time = time.time()
-    #     container.start()
-    #
-    #     # Execute the Python command inside the container
-    #     exit_code, output = container.exec_run(f"python3 wana.py -r -e {contract_path}")
-    #     # Optionally, stop and remove the container
-    #     container.stop()
-    #     end_time = time.time()
-    #     execution_time = end_time - start_time
-    #     container.remove()
-    #
-    #     print(output.decode('utf-8'))
-    txt = '''2024/01/22 12:25:34 Start detect Smart Contract mishandled
-    2024/01/22 12:25:34 Smart Contract = mishandled
-    2024/01/22 12:28:28 mishand: mishandled exception found, the function invoke path is as follows
-    2024/01/22 12:28:28 vunlnerability 0 as follows:
-    2024/01/22 12:28:28 wasm backtrace:[*, |, 0, 0, 0, |, |, |, |, |, |, |, *, |, |, |, *, |, *, |, *, |, |, |, *, |, *, |, *, |, *, |, *, |, |, |, *, |, *, |, *, |, |, |, *, |, *, |, ]
-    2024/01/22 12:28:28 !transfer
-    2024/01/22 12:28:28 !mishandled1::mishandled1::get_balance::h808fb346985326e5
-    2024/01/22 12:28:28 !core::result::unwrap_failed::h2e47e57826b226f8
-    2024/01/22 12:28:28 !core::panicking::panic_fmt::h218e3ff5d08adb9a
-    2024/01/22 12:28:28 !rust_begin_unwind
-    2024/01/22 12:28:28 !std::sys_common::backtrace::__rust_end_short_backtrace::h997f9f6994e7cd92
-    2024/01/22 12:28:28 !std::panicking::begin_panic_handler::{{closure}}::hea89c0a6f22c5877
-    2024/01/22 12:28:28 !std::panicking::rust_panic_with_hook::h4808adb4be6d0847
-    2024/01/22 12:28:28 !rust_panic
-    2024/01/22 12:28:28 !mishandled1::mishandled1::get_balance::h808fb346985326e5
-    2024/01/22 12:28:28 !core::result::unwrap_failed::h2e47e57826b226f8
-    2024/01/22 12:28:28 !core::panicking::panic_fmt::h218e3ff5d08adb9a
-    2024/01/22 12:28:28 !rust_begin_unwind
-    2024/01/22 12:28:28 !std::sys_common::backtrace::__rust_end_short_backtrace::h997f9f6994e7cd92
-    2024/01/22 12:28:28 !std::panicking::begin_panic_handler::{{closure}}::hea89c0a6f22c5877
-    2024/01/22 12:28:28 !sys_call
-    2024/01/22 12:28:28 call contract:"asset", function:$transfer_from, but not check the result
-    2024/01/22 12:28:28 mishandled: overflow vulnerability found
-    2024/01/22 12:28:28 use time: 174.43785192599898'''
-    return jsonify({"message": "Analysis completed", "exit_code": 1, "logs": txt, "time": 174.43785192599898}), 200
-    # except Exception as e:
-    #     return jsonify({"error": str(e)}), 500
+    client = docker.from_env()
+    contract = request.form.get("contract")
+    if not contract:
+        return jsonify({"error": "Contract not specified"}), 400
+    try:
+        host_path = project_root_path
+        contract_path = f"/data/media/contracts/{contract}"
+        image_name = "weiboot/wana:v1.0"
+        image = None
+
+        # Check if the image exists
+        for img in client.images.list():
+            if image_name in img.tags:
+                image = img
+                break
+
+        # If not, pull the image
+        if image is None:
+            client.images.pull(image_name)
+            print("pulling " + image_name)
+
+        # Define the volume mapping
+        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+
+        # Create the container without starting it
+        container = client.containers.create(image_name, volumes=volumes, tty=True)
+
+        # Start the container
+        start_time = time.time()
+        container.start()
+
+        # Execute the Python command inside the container
+        exit_code, output = container.exec_run(f"python3 wana.py -r -e {contract_path}")
+        # Optionally, stop and remove the container
+        container.stop()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        container.remove()
+
+        print(output.decode('utf-8'))
+
+
+        return jsonify({"message": "Analysis completed", "exit_code": exit_code, "logs": output.decode('utf-8'), "time": execution_time}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @bp.route("/run/evulhunter", methods=['POST', 'GET'])
@@ -654,21 +631,6 @@ def tool_selection():
     return jsonify(tools)
 
 
-def save_to_csv(contract_name, bugs_name, logs):
-    save_dir = os.path.join(project_root_path, "media/logs")
-    os.makedirs(save_dir, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    timestamp_log = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    field_names = ["contract_name", "bugs_name", "timestamp", "logs"]
-    save_path = os.path.join(save_dir, f"{timestamp}.csv")
-    data = [contract_name, bugs_name, timestamp_log, logs]
-
-    with open(save_path, mode='w', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(field_names)
-        writer.writerow(data)
-
-
 @bp.post("/contractsAnalyze/slither")
 def analyzeContracts_slither():
     # Upload contracts
@@ -736,60 +698,8 @@ def analyzeContracts_slither():
         bugs = "Reentrancy"
         save_to_csv(contract, bugs, logs)
         # vuln_list = process_slither_data(logs)
-        processData = process_log(logs)
+        processData = process_log_slither(logs)
         return jsonify(processData), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-
-@bp.post("/contractsAnalyze/mythril")
-def analyzeContracts_mythril():
-    # Upload contracts
-    form = UploadContractForm(request.files)
-    if form.validate():
-        file = form.file.data
-        filename = file.filename
-        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
-        file.save(contract_path)
-        # return restful.ok(data={"contract_url": filename})
-    else:
-        message = form.messages[0]
-
-    # analyze contracts
-    client = docker.from_env()
-    contract = filename
-    if not contract:
-        return jsonify({"error": "Contract not specified"}), 400
-    # print("contract: ", contract)
-    # print("start")
-    try:
-        host_path = project_root_path
-        contract_path = f"/data/media/tmpContracts/{contract}"
-        image_name = "smartbugs/mythril:0.23.15"
-        image = None
-
-        for img in client.images.list():
-            if image_name in img.tags:
-                image = img
-                break
-        if image is None:
-            client.images.pull(image_name)
-
-        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
-        command = f"analyze -o json {contract_path}"
-        container = client.containers.create(image_name, command=command, volumes=volumes)
-        start_time = time.time()  # Record start time
-        container.start()
-        result = container.wait()
-        logs = container.logs().decode('utf-8')
-        container.stop()
-        end_time = time.time()
-        container.remove()
-        execution_time = end_time - start_time
-        bugs = "Reentrancy"
-        save_to_csv(contract, bugs, logs)
-
-        return jsonify({"message": "Analysis completed", "exit_code": result['StatusCode'], "logs": logs, "time": execution_time}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -802,6 +712,12 @@ def analyzeContracts_evulhunter():
         file = form.file.data
         filename = file.filename
         contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+        # remove previous the same name of contacts
+        try:
+            os.remove(contract_path)
+        except OSError as e:
+            # Handle the error (e.g., log it, notify someone, etc.)
+            print(f"Error: None previous contracts")
         file.save(contract_path)
         # return restful.ok(data={"contract_url": filename})
     else:
@@ -845,8 +761,11 @@ def analyzeContracts_evulhunter():
         container.stop()
         end_time = time.time()
         execution_time = end_time - start_time
+        container.remove()
 
-        return jsonify({"message": "Analysis completed", "exit_code": exit_code, "logs": output.decode('utf-8'), "time": execution_time}), 200
+        results = process_log_evulhunter(output.decode('utf-8'))
+
+        return jsonify(results), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
