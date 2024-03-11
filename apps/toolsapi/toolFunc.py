@@ -1,5 +1,5 @@
 # 使用脚本执行工作的代码放在toolExecute.py文件中
-from .process import process_slither_data, process_log_slither, save_to_csv, process_log_evulhunter
+from .process import process_slither_data, process_log_slither, save_to_csv, process_log_evulhunter, process_log_rust
 
 from flask import (
     Blueprint,
@@ -550,16 +550,19 @@ def run_wana_analysis():
 
         # Execute the Python command inside the container
         exit_code, output = container.exec_run(f"python3 wana.py -r -e {contract_path}")
+        logs = output.decode('utf-8')
         # Optionally, stop and remove the container
         container.stop()
         end_time = time.time()
         execution_time = end_time - start_time
         container.remove()
 
-        print(output.decode('utf-8'))
+        print(logs)
+        bugs = "Reentrancy"
+        save_to_csv(contract, bugs, logs)
 
-
-        return jsonify({"message": "Analysis completed", "exit_code": exit_code, "logs": output.decode('utf-8'), "time": execution_time}), 200
+        return jsonify(
+            {"message": "Analysis completed", "exit_code": exit_code, "logs": logs, "time": execution_time}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -600,14 +603,18 @@ def run_evulhunter_analysis():
         # Execute the Python command inside the container
         exit_code, output = container.exec_run(f"python3 EOSVulDetector.py -i \"{contract_path}\"  -t 2 -o \"test.txt\"")
         # Optionally, stop and remove the container
+        logs = container.logs().decode('utf-8')
+
         container.stop()
         end_time = time.time()
         execution_time = end_time - start_time
         container.remove()
 
-        print(output.decode('utf-8'))
+        print(logs)
 
-        return jsonify({"message": "Analysis completed", "exit_code": exit_code, "logs": output.decode('utf-8'), "time": execution_time}), 200
+        bugs = "Reentrancy"
+        save_to_csv(contract, bugs, logs)
+        return jsonify({"message": "Analysis completed", "exit_code": exit_code, "logs": logs, "time": execution_time}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -769,3 +776,70 @@ def analyzeContracts_evulhunter():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@bp.post("/contractsAnalyze/wana_rust")
+def analyzeContracts_wana_analysis():
+    form = UploadContractForm(request.files)
+    if form.validate():
+        file = form.file.data
+        filename = file.filename
+        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+        # remove previous the same name of contacts
+        try:
+            os.remove(contract_path)
+        except OSError as e:
+            # Handle the error (e.g., log it, notify someone, etc.)
+            print(f"None previous contracts")
+        file.save(contract_path)
+        # return restful.ok(data={"contract_url": filename})
+    else:
+        message = form.messages[0]
+
+    # analyze contracts
+    client = docker.from_env()
+    contract = filename
+    if not contract:
+        return jsonify({"error": "Contract not specified"}), 400
+    try:
+        host_path = project_root_path
+        contract_path = f"/data/media/tmpContracts/{contract}"
+        image_name = "weiboot/wana:v1.0"
+        image = None
+
+        # Check if the image exists
+        for img in client.images.list():
+            if image_name in img.tags:
+                image = img
+                break
+
+        # If not, pull the image
+        if image is None:
+            client.images.pull(image_name)
+            print("pulling " + image_name)
+
+        # Define the volume mapping
+        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+
+        # Create the container without starting it
+        container = client.containers.create(image_name, volumes=volumes, tty=True)
+
+        # Start the container
+        start_time = time.time()
+        container.start()
+
+        # Execute the Python command inside the container
+        exit_code, output = container.exec_run(f"python3 wana.py -r -e {contract_path}")
+        logs = output.decode('utf-8')
+        # Optionally, stop and remove the container
+        container.stop()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        container.remove()
+
+        print(logs)
+        bugs = "Reentrancy"
+        save_to_csv(contract, bugs, logs)
+
+        return jsonify(process_log_rust(logs)), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

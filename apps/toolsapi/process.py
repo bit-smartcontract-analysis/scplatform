@@ -166,3 +166,51 @@ def process_log_evulhunter(log):
     }
 
     return output
+
+
+def process_log_rust(log):
+    file_name_match = re.search(r"Smart Contract = (\w+)", log)
+    if file_name_match:
+        file_name = file_name_match.group(1)
+    else:
+        return {
+            "msg": "错误结果",
+            "code": "9999",
+            "data": None
+        }
+
+    # Initialize the output structure
+    output = {
+        "msg": "success",
+        "code": "0",
+        "data": {
+            "vulnerList": "",
+            "securityLevel": "None",  # Default to None unless vulnerabilities are found
+            "evaluate": ""
+        },
+        "logs": log
+    }
+
+    # Compile a regex pattern to find vulnerabilities associated with the file
+    vulner_pattern = re.compile(rf"{file_name}: (\w+ vulnerability found)")
+    vulner_matches = vulner_pattern.findall(log)
+
+    if vulner_matches:
+        # Join the found vulnerabilities and remove the timestamp
+        vulner_list = [re.sub(r'^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} ', '', match) for match in vulner_matches]
+        output["data"]["vulnerList"] = ", ".join(vulner_list)
+        output["data"]["securityLevel"] = "Low"  # Assuming "Low" if any vulnerabilities are found
+
+    securityLevel = output["data"]["securityLevel"]
+    if securityLevel == "High":
+        evaluate = "Contract contains high severity vulnerabilities. Immediate action required."
+    elif securityLevel == "Medium":
+        evaluate = "Contract contains medium severity issues. Review recommended."
+    elif securityLevel == "Low":
+        evaluate = "Contract contains low severity issues. Minimal risk."
+    else:
+        evaluate = "No vulnerabilities found."
+
+    output["data"]["evaluate"] = evaluate
+
+    return output
