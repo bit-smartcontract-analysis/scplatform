@@ -836,7 +836,7 @@ def analyzeContracts_wana_analysis():
         execution_time = end_time - start_time
         container.remove()
 
-        print(logs)
+        # print(logs)
         bugs = "Reentrancy"
         save_to_csv(contract, bugs, logs)
 
