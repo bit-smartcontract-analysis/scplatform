@@ -23,5 +23,5 @@ class ToolForm(BaseForm):
 
 
 class UploadContractForm(BaseForm):
-    file = FileField(validators=[FileAllowed(['sol', 'wasm'], message="合约格式不符合要求！"),
+    file = FileField(validators=[FileAllowed(['sol', 'wasm', 'go'], message="合约格式不符合要求！"),
                                      FileSize(max_size=1024 * 1024 * 1, message="合约最大不能超过1M")])
