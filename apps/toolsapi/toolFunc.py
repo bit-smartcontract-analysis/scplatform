@@ -846,7 +846,7 @@ def analyzeContracts_wana_analysis():
         return jsonify({"error": str(e)}), 500
 
 
-@bp.post("/contractsAnalyze/ccanalyzer")
+@bp.route("/contractsAnalyze/ccanalyzer", methods=["POST"])
 def analyzeContracts_ccanalyzer():
     form = UploadContractForm(request.files)
     if form.validate():
