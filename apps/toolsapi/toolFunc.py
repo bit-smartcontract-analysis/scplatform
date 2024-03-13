@@ -15,6 +15,7 @@ import os
 from .forms import UploadContractForm
 from utils import restful
 import time
+import subprocess
 
 
 bp = Blueprint("toolFunc", __name__, url_prefix="/toolFunc")
@@ -843,3 +844,35 @@ def analyzeContracts_wana_analysis():
         return jsonify(process_log_rust(logs)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@bp.post("/contractsAnalyze/ccanalyzer")
+def analyzeContracts_ccanalyzer():
+    form = UploadContractForm(request.files)
+    if form.validate():
+        file = form.file.data
+        filename = file.filename
+        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+        # remove previous the same name of contacts
+        try:
+            os.remove(contract_path)
+        except OSError as e:
+            # Handle the error (e.g., log it, notify someone, etc.)
+            print(f"None previous contracts")
+        file.save(contract_path)
+        # return restful.ok(data={"contract_url": filename})
+    else:
+        message = form.messages[0]
+
+    command = f"/srv/chaincode/chaincode-analyzer/ccanalyzer {filename}"
+
+    try:
+        # Execute the command
+        result = subprocess.run(command, shell=True, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                text=True)
+
+        # If the command was successful, return the output
+        return jsonify({"message": "Analysis completed", "output": result.stdout}), 200
+    except subprocess.CalledProcessError as e:
+        # If an error occurred while executing the command, return the error
+        return jsonify({"error": "Analysis failed", "message": e.stderr}), 500
