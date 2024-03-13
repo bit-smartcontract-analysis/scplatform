@@ -864,7 +864,9 @@ def analyzeContracts_ccanalyzer():
     else:
         message = form.messages[0]
 
-    command = f"/srv/chaincode/chaincode-analyzer/ccanalyzer {filename}"
+    contract_path = f"/data/media/tmpContracts/{filename}"
+
+    command = f"/srv/chaincode/chaincode-analyzer/ccanalyzer {contract_path}"
 
     try:
         # Execute the command
