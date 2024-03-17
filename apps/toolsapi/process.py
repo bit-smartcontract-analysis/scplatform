@@ -217,6 +217,10 @@ def process_log_rust(log):
 
 
 def process_log_ccanalyzer(raw_output):
+    # Check if stderr is not empty and return an error message
+    if raw_output.stderr:  # Assuming stderr is a string and using strip() to check for non-whitespace content
+        return {"msg": "错误结果", "code": "9999", "data": None}
+
     # Regular expression to find vulnerabilities
     vuln_pattern = re.compile(
         r"## Category\s+(.*?)\n## Function\s+(.*?)\n.*?## Position\s+(.*?)\n",
@@ -225,7 +229,6 @@ def process_log_ccanalyzer(raw_output):
 
     # Extract vulnerabilities
     vulnerabilities = vuln_pattern.findall(raw_output.stdout)
-
 
     # Process extracted vulnerabilities to format them into readable strings
     vulnerList = []
@@ -256,8 +259,7 @@ def process_log_ccanalyzer(raw_output):
             "vulnerList": vulnerList,
             "securityLevel": securityLevel,
             "evaluate": evaluate
-        },
-        "error": raw_output.stderr
+        }
     }
 
     return result
