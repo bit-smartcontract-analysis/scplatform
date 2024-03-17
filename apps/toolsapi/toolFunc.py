@@ -875,3 +875,29 @@ def analyzeContracts_ccanalyzer():
     except subprocess.CalledProcessError as e:
         # If an error occurred while executing the command, return the error
         return jsonify({"error": "Analysis failed", "stederr": e.stderr, "returncode": e.returncode}), 500
+
+
+raw_output = """
+Target Files:  [/srv/scplatform/media/tmpContracts/analyze.go]
+## Category  External Library
+## Function  Imports
+## VarName  
+## Position  /srv/scplatform/media/tmpContracts/analyze.go:16:2
+\t\"github.com/hyperledger-labs/chaincode-analyzer/util\"
+
+## Category  Global Variable
+## Function  Global Space
+## VarName  
+## Position  /srv/scplatform/media/tmpContracts/analyze.go:20:1
+var logger *log.Logger
+
+## Category  MapIter
+## Function  AnalyzeFiles
+## VarName  files
+## Position  /srv/scplatform/media/tmpContracts/analyze.go:39:2
+\tfor filename, src := range files {
+(repeated sections omitted for brevity)
+"""
+@bp.route("/contractsAnalyze/A", methods=["GET"])
+def analyzeContracts_A():
+    return jsonify(process_log_ccanalyzer(raw_output)), 200

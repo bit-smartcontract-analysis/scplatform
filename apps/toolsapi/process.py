@@ -218,22 +218,35 @@ def process_log_rust(log):
 
 def process_log_ccanalyzer(raw_output):
     # Regular expression to find vulnerabilities
-    vuln_pattern = re.compile(r"## Category\s+(.*?)\n## Function\s+(.*?)\n## Position\s+(.*?)\n\\t\"(.*?)\"")
+    vuln_pattern = re.compile(
+        r"## Category\s+(.*?)\n## Function\s+(.*?)\n.*?## Position\s+(.*?)\n",
+        re.DOTALL
+    )
 
     # Extract vulnerabilities
     vulnerabilities = vuln_pattern.findall(raw_output)
 
+
     # Process extracted vulnerabilities to format them into readable strings
     vulnerList = []
-    for category, function, position, detail in vulnerabilities:
-        vulnerList.append(f"{category} in {function} at {position.strip()} with detail: {detail}")
+    for category, function, position in vulnerabilities:
+        vulnerList.append(f"{category} 在 `{function}`中: {position.strip()}")
 
-    # Assign a security level based on extracted vulnerabilities
-    # This is a simplified example; actual implementation may vary based on severity and quantity of vulnerabilities
-    securityLevel = "Medium" if vulnerList else "None"
+    # # Initialize security level flags
+    has_external_library = any("External Library" in v for v in vulnerList)
+    has_global_variable = any("Global Variable" in v for v in vulnerList)
+    has_map_iterations = any("MapIter" in v for v in vulnerList)
+    #
+    # # Assign a security level based on extracted vulnerabilities
+    if has_map_iterations:
+        securityLevel = "中级"
+    elif has_external_library or has_global_variable:
+        securityLevel = "低级"
+    else:
+        securityLevel = "无"
 
     # General evaluation
-    evaluate = "Recommend thorough review and testing of external dependencies, careful management of global state, ensuring deterministic behavior, and optimizing map iterations for efficiency and error handling."
+    evaluate = f"需要修复{len(vulnerList)}个漏洞,请参考https://goethereumbook.org/smart-contract-deploy/"
 
     # Construct the JSON structure
     result = {
