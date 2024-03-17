@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import csv
 
+
 project_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
 
@@ -203,13 +204,13 @@ def process_log_rust(log):
 
     securityLevel = output["data"]["securityLevel"]
     if securityLevel == "High":
-        evaluate = "Contract contains high severity vulnerabilities. Immediate action required."
+        evaluate = "合约包含高级安全漏洞，请立即修复"
     elif securityLevel == "Medium":
-        evaluate = "Contract contains medium severity issues. Review recommended."
+        evaluate = "合约包含中级安全漏洞"
     elif securityLevel == "Low":
-        evaluate = "Contract contains low severity issues. Minimal risk."
+        evaluate = "合约包含低级安全漏洞"
     else:
-        evaluate = "No vulnerabilities found."
+        evaluate = "无漏洞发现"
 
     output["data"]["evaluate"] = evaluate
 
