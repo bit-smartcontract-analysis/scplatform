@@ -74,8 +74,7 @@ def process_log_slither(log_content):
     security_level = result['data']['securityLevel']
     vulner_count = len(result['data']['vulnerList'])
     if security_level == "High":
-        result['data'][
-            'evaluate'] = f"Contract contains {vulner_count} high severity vulnerabilities. Immediate action required."
+        result['data']['evaluate'] = f"Contract contains {vulner_count} high severity vulnerabilities. Immediate action required."
     elif security_level == "Medium":
         result['data']['evaluate'] = f"Contract contains {vulner_count} medium severity issues. Review recommended."
     elif security_level == "Low":
@@ -224,15 +223,6 @@ def process_log_ccanalyzer(raw_output):
     # Extract vulnerabilities
     vulnerabilities = vuln_pattern.findall(raw_output)
 
-    if "External Library" in raw_output:
-        vulnerabilities["External Library"] = True
-
-    if "Global Variable" in raw_output:
-        vulnerabilities["Global Variable"] = True
-
-    if re.search(r"MapIter", raw_output):
-        vulnerabilities["Map Iterations"] = True
-
     # Process extracted vulnerabilities to format them into readable strings
     vulnerList = []
     for category, function, position, detail in vulnerabilities:
@@ -240,11 +230,7 @@ def process_log_ccanalyzer(raw_output):
 
     # Assign a security level based on extracted vulnerabilities
     # This is a simplified example; actual implementation may vary based on severity and quantity of vulnerabilities
-    securityLevel = "None"
-    if vulnerabilities["Map Iterations"]:
-        securityLevel = "Medium"
-    if vulnerabilities["External Library"] or vulnerabilities["Global Variable"]:
-        securityLevel = "Low"
+    securityLevel = "Medium" if vulnerList else "None"
 
     # General evaluation
     evaluate = "Recommend thorough review and testing of external dependencies, careful management of global state, ensuring deterministic behavior, and optimizing map iterations for efficiency and error handling."
