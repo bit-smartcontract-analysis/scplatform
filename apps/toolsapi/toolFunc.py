@@ -871,7 +871,7 @@ def analyzeContracts_ccanalyzer():
         result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         # If the command was successful, return the output
         # return jsonify({"message": "Analysis completed", "output": result.stdout, "error": result.stderr}), 200
-        return jsonify(process_log_ccanalyzer(result.stdout)), 200
+        return jsonify(process_log_ccanalyzer(result)), 200
     except subprocess.CalledProcessError as e:
         # If an error occurred while executing the command, return the error
         return jsonify({"error": "Analysis failed", "stederr": e.stderr, "returncode": e.returncode}), 500

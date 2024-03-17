@@ -217,6 +217,9 @@ def process_log_rust(log):
 
 
 def process_log_ccanalyzer(raw_output):
+    if not hasattr(raw_output, 'stdout') or not hasattr(raw_output, 'stderr'):
+        return {"msg": "错误结果", "code": "9999", "data": None}
+
     # Regular expression to find vulnerabilities
     vuln_pattern = re.compile(
         r"## Category\s+(.*?)\n## Function\s+(.*?)\n.*?## Position\s+(.*?)\n",
