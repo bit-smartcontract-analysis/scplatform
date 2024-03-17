@@ -871,33 +871,8 @@ def analyzeContracts_ccanalyzer():
         result = subprocess.run(command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         # If the command was successful, return the output
         # return jsonify({"message": "Analysis completed", "output": result.stdout, "error": result.stderr}), 200
-        return jsonify(process_log_ccanalyzer(result.stdout)), 200
+        return jsonify(process_log_ccanalyzer(result)), 200
     except subprocess.CalledProcessError as e:
         # If an error occurred while executing the command, return the error
-        return jsonify({"error": "Analysis failed", "stederr": e.stderr, "returncode": e.returncode}), 500
+        return jsonify({"msg": "错误结果", "code": "9999", "data": None}), 500
 
-
-raw_output = """
-Target Files:  [/srv/scplatform/media/tmpContracts/analyze.go]
-## Category  External Library
-## Function  Imports
-## VarName  
-## Position  /srv/scplatform/media/tmpContracts/analyze.go:16:2
-\t\"github.com/hyperledger-labs/chaincode-analyzer/util\"
-
-## Category  Global Variable
-## Function  Global Space
-## VarName  
-## Position  /srv/scplatform/media/tmpContracts/analyze.go:20:1
-var logger *log.Logger
-
-## Category  MapIter
-## Function  AnalyzeFiles
-## VarName  files
-## Position  /srv/scplatform/media/tmpContracts/analyze.go:39:2
-\tfor filename, src := range files {
-(repeated sections omitted for brevity)
-"""
-@bp.route("/contractsAnalyze/A", methods=["GET"])
-def analyzeContracts_A():
-    return jsonify(process_log_ccanalyzer(raw_output)), 200

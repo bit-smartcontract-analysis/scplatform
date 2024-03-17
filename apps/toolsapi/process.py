@@ -224,7 +224,7 @@ def process_log_ccanalyzer(raw_output):
     )
 
     # Extract vulnerabilities
-    vulnerabilities = vuln_pattern.findall(raw_output)
+    vulnerabilities = vuln_pattern.findall(raw_output.stdout)
 
 
     # Process extracted vulnerabilities to format them into readable strings
@@ -256,7 +256,8 @@ def process_log_ccanalyzer(raw_output):
             "vulnerList": vulnerList,
             "securityLevel": securityLevel,
             "evaluate": evaluate
-        }
+        },
+        "error": raw_output.stderr
     }
 
     return result
