@@ -170,6 +170,7 @@ def process_log_evulhunter(log):
 
 
 def process_log_rust(log):
+    print(log)
     file_name_match = re.search(r"Smart Contract = (\w+)", log)
     if file_name_match:
         file_name = file_name_match.group(1)

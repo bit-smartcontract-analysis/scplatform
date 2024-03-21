@@ -516,6 +516,59 @@ def run_honeybadger_analysis():
         return jsonify({"error": str(e)}), 500
 
 
+@bp.route("/run/wana_cpp", methods=['POST', 'GET'])
+def run_wanaCpp_analysis():
+    client = docker.from_env()
+    contract = request.form.get("contract")
+    # print(contract)
+    if not contract:
+        return jsonify({"error": "Contract not specified"}), 400
+    try:
+        host_path = project_root_path
+        contract_path = f"/data/media/contracts/{contract}"
+        image_name = "weiboot/wana:v0.2"
+        image = None
+
+        # Check if the image exists
+        for img in client.images.list():
+            if image_name in img.tags:
+                image = img
+                break
+
+        # If not, pull the image
+        if image is None:
+            client.images.pull(image_name)
+            print("pulling " + image_name)
+
+        # Define the volume mapping
+        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+
+        # Create the container without starting it
+        container = client.containers.create(image_name, volumes=volumes, tty=True)
+
+        # Start the container
+        start_time = time.time()
+        container.start()
+
+        # Execute the Python command inside the container
+        exit_code, output = container.exec_run(f"python3 wana.py -t 200 -e {contract_path}")
+        logs = output.decode('utf-8')
+        # Optionally, stop and remove the container
+        container.stop()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        container.remove()
+
+        print(logs)
+        bugs = "Reentrancy"
+        save_to_csv(contract, bugs, logs)
+
+        return jsonify(
+            {"message": "Analysis completed", "exit_code": exit_code, "logs": logs, "time": execution_time}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @bp.route("/run/wana_rust", methods=['POST', 'GET'])
 def run_wana_analysis():
     client = docker.from_env()
@@ -876,3 +929,70 @@ def analyzeContracts_ccanalyzer():
         # If an error occurred while executing the command, return the error
         return jsonify({"error": "Analysis failed", "stederr": e.stderr, "returncode": e.returncode}), 500
 
+
+@bp.route("/contractsAnalyze/wana_cpp", methods=['POST'])
+def analyzeContracts_analysis():
+    form = UploadContractForm(request.files)
+    if form.validate():
+        file = form.file.data
+        filename = file.filename
+        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+        # remove previous the same name of contacts
+        try:
+            os.remove(contract_path)
+        except OSError as e:
+            # Handle the error (e.g., log it, notify someone, etc.)
+            print(f"None previous contracts")
+        file.save(contract_path)
+        # return restful.ok(data={"contract_url": filename})
+    else:
+        message = form.messages[0]
+
+    client = docker.from_env()
+    contract = filename
+    if not contract:
+        return jsonify({"error": "Contract not specified"}), 400
+    try:
+        host_path = project_root_path
+        contract_path = f"/data/media/tmpContracts/{contract}"
+        image_name = "weiboot/wana:v0.2"
+        image = None
+
+        # Check if the image exists
+        for img in client.images.list():
+            if image_name in img.tags:
+                image = img
+                break
+
+        # If not, pull the image
+        if image is None:
+            client.images.pull(image_name)
+            print("pulling " + image_name)
+
+        # Define the volume mapping
+        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+
+        # Create the container without starting it
+        container = client.containers.create(image_name, volumes=volumes, tty=True)
+
+        # Start the container
+        start_time = time.time()
+        container.start()
+
+        # Execute the Python command inside the container
+        exit_code, output = container.exec_run(f"python3 wana.py -t 200 -e {contract_path}")
+        logs = output.decode('utf-8')
+        # Optionally, stop and remove the container
+        container.stop()
+        end_time = time.time()
+        execution_time = end_time - start_time
+        container.remove()
+
+        print(logs)
+        bugs = "Reentrancy"
+        save_to_csv(contract, bugs, logs)
+
+        return jsonify(
+            {"message": "Analysis completed", "exit_code": exit_code, "logs": logs, "time": execution_time}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
