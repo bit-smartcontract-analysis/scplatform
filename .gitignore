@@ -38,3 +38,4 @@ media/contracts/*.wasm
 media/contracts/*.sol
 media/tmpContracts/*.wasm
 media/tmpContracts/*.sol
+media/logs/*.csv

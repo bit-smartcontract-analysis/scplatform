@@ -299,13 +299,18 @@ def process_log_ccanalyzer(raw_output):
     vulnerList = []
     recommendList = []
     for category, function, position in vulnerabilities:
-        vulnerList.append(f"{category} 在 `{function}`中: {position.strip()}")
+        position_clean = position.strip()
+        vulnerList.append(f"{category} 在 `{function}`中: {position_clean}")
         if category == "External Library":
-            recommendList.append("检查外部库的安全性")
+            recommendation = "检查外部库的安全性"
         elif category == "Global Variable":
-            recommendList.append("验证全局变量的使用是否安全")
+            recommendation = "验证全局变量的使用是否安全"
         elif category == "MapIter":
-            recommendList.append("优化映射迭代器的使用以防止性能问题")
+            recommendation = "优化映射迭代器的使用以防止性能问题"
+        else:
+            recommendation = "进行进一步的检查"
+
+        recommendList.append(f"{recommendation} - 位置: {position_clean}")
 
     # # Initialize security level flags
     has_external_library = any("External Library" in v for v in vulnerList)
