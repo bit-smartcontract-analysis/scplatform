@@ -2,6 +2,7 @@ import re
 import os
 from datetime import datetime
 import csv
+from typing import Dict, Any
 
 
 project_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
@@ -49,7 +50,7 @@ def process_log_slither(log_content):
             "vulnerList": [],
             "securityLevel": "",
             "evaluate": "",
-            "vulnerRecommend": []
+            "recommendList": []
         }
     }
 
@@ -100,7 +101,7 @@ def process_log_slither(log_content):
         result['data']['securityLevel'] = "None"
         result['data']['evaluate'] = "没有风险的合约."
 
-    result['data']['vulnerRecommend'] = analysisData(result['data']['vulnerList'])
+    result['data']['recommendList'] = analysisData(result['data']['vulnerList'])
 
     return result
 
@@ -173,7 +174,7 @@ def process_log_evulhunter(log):
 
 
 def process_log_rust(log):
-    print(log)
+
     file_name_match = re.search(r"Smart Contract = (\w+)", log)
     if file_name_match:
         file_name = file_name_match.group(1)
@@ -221,6 +222,62 @@ def process_log_rust(log):
     return output
 
 
+def process_python_rust(log: str) -> Dict[str, Any]:
+    # Print the log for debugging
+    print(log)
+
+    # Attempt to extract the file name of the smart contract
+    file_name_match = re.search(r"Smart Contract = (\w+)", log)
+    if not file_name_match:
+        return {"msg": "错误结果", "code": "9999", "data": None}
+
+    file_name = file_name_match.group(1)
+
+    # Prepare the output structure
+    output = {
+        "msg": "success",
+        "code": "0",
+        "data": {
+            "vulnerList": [],
+            "recommendList": [],
+            "securityLevel": "None",  # Default security level
+            "evaluate": ""
+        },
+        "logs": log
+    }
+
+    # Define the mapping from vulnerability keywords to their translations
+    vulner_translation = {
+        "overflow vulnerability found": "整数溢出. 修复建议：请为您的合约使用高版本,或使用SafeMath库进行算术运算.",
+        "reentrancy vulnerability found": "重入",
+        "unchecked return value vulnerability found": "未检出返回值"
+    }
+
+    # Compile a regex pattern to find vulnerabilities
+    vulner_pattern = re.compile(rf"{file_name}: (\w+ vulnerability found)")
+    for match in re.finditer(vulner_pattern, log):
+        vulner_key = match.group(1)
+        # Translate and add to the list
+        if vulner_key in vulner_translation:
+            output["data"]["vulnerList"].append(vulner_key)
+            output["data"]["recommendList"].append(vulner_translation[vulner_key])
+
+    # Set security level based on found vulnerabilities
+    if output["data"]["vulnerList"]:
+        output["data"]["securityLevel"] = "Low"  # This can be adjusted based on actual vulnerability severity
+
+    # Provide an evaluation based on security level
+    security_level_mapping = {
+        "High": "合约包含高级安全漏洞，请立即修复",
+        "Medium": "合约包含中级安全漏洞",
+        "Low": "合约包含低级安全漏洞",
+        "None": "无漏洞发现"
+    }
+    output["data"]["evaluate"] = security_level_mapping[output["data"]["securityLevel"]]
+
+    return output
+
+
 def process_log_ccanalyzer(raw_output):
     if not hasattr(raw_output, 'stdout') or not hasattr(raw_output, 'stderr'):
         raise ValueError("processResult must have 'stdout' and 'stderr' attributes")
@@ -240,8 +297,15 @@ def process_log_ccanalyzer(raw_output):
 
     # Process extracted vulnerabilities to format them into readable strings
     vulnerList = []
+    recommendList = []
     for category, function, position in vulnerabilities:
         vulnerList.append(f"{category} 在 `{function}`中: {position.strip()}")
+        if category == "External Library":
+            recommendList.append("检查外部库的安全性")
+        elif category == "Global Variable":
+            recommendList.append("验证全局变量的使用是否安全")
+        elif category == "MapIter":
+            recommendList.append("优化映射迭代器的使用以防止性能问题")
 
     # # Initialize security level flags
     has_external_library = any("External Library" in v for v in vulnerList)
@@ -250,11 +314,11 @@ def process_log_ccanalyzer(raw_output):
     #
     # # Assign a security level based on extracted vulnerabilities
     if has_map_iterations:
-        securityLevel = "中级"
+        securityLevel = "Medium"
     elif has_external_library or has_global_variable:
-        securityLevel = "低级"
+        securityLevel = "Low"
     else:
-        securityLevel = "无"
+        securityLevel = "None"
 
     # General evaluation
     evaluate = f"需要修复{len(vulnerList)}个漏洞,请参考https://goethereumbook.org/smart-contract-deploy/"
@@ -265,6 +329,7 @@ def process_log_ccanalyzer(raw_output):
         "code": "0",
         "data": {
             "vulnerList": vulnerList,
+            "recommendList": recommendList,
             "securityLevel": securityLevel,
             "evaluate": evaluate
         }
@@ -274,13 +339,6 @@ def process_log_ccanalyzer(raw_output):
 
 
 def analysisData(vulnerList):
-    # vulnerList = [
-    #     "Reentrancy in Reentrance.withdraw (#21-31): External calls: - msg.sender.call.value(_amount)() (#24-27) State variables written after the call(s): - balances (#27-31)",
-    #     "Reentrance.donate (#13-17) should be declared external Reentrance.balanceOf (#17-21) should be declared external Reentrance.withdraw (#21-31) should be declared external Reentrance.fallback (#32) should be declared external",
-    #     "Detected issues with version pragma in #7-9): it allows old versions",
-    #     "Low level call in Reentrance.withdraw (#21-31): -msg.sender.call.value(_amount)() #24-27",
-    #     "Parameter '_to' of Reentrance.donate (#13) is not in mixedCase Parameter '_who' of Reentrance.balanceOf (#17) is not in mixedCase Parameter '_amount' of Reentrance.withdraw (#21-22) is not in mixedCase"
-    # ]
 
     vulnerability_map = {
         "Reentrancy": "重入漏洞. 修复建议: 使用Checks-Effects-Interactions模式.Check:：首先,验证所有条件和要求; Effects: 在调用外部合约之前更新合约的状态; Interactions:最后与其他合约交互（例如发送以太币）.",

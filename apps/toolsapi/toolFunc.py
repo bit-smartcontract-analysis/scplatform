@@ -1,5 +1,5 @@
 # 使用脚本执行工作的代码放在toolExecute.py文件中
-from .process import process_log_slither, save_to_csv, process_log_evulhunter, process_log_rust, process_log_ccanalyzer, analysisData, recommendData
+from .process import process_log_slither, save_to_csv, process_log_evulhunter, process_log_rust, process_log_ccanalyzer, process_python_rust
 
 from flask import (
     Blueprint,
@@ -894,7 +894,7 @@ def analyzeContracts_wana_analysis():
         bugs = "Reentrancy"
         save_to_csv(contract, bugs, logs)
 
-        return jsonify(process_log_rust(logs)), 200
+        return jsonify(process_python_rust(logs)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -1000,5 +1000,6 @@ def analyzeContracts_analysis():
 
 @bp.route("/contractsAnalyze/data", methods=['GET'])
 def analyzeContracts_data():
-    result = recommendData()
+    log = "2024/04/01 08:19:53 Start detect Smart Contract time\n2024/04/01 08:19:53 Smart Contract = time\n2024/04/01 08:21:45 [1;32;40mt[0m: [1;31;40msys_time_dependency[0m found, the function invoke path is as follows\n2024/04/01 08:21:45 vunlnerability 0 as follows:\n2024/04/01 08:21:45 wasm backtrace:[*, |, 0, 0, |, |, |, |, |, 0, |, |, 4294821199..., ]\n2024/04/01 08:21:45 !withdraw\n2024/04/01 08:21:45 Get timestamp in function: [1;32;40m$chrono::offset::local::Local::now::h320e4c600bfb5e18[0m, call contract:[1;34;40m\"asset\"[0m, function:[1;34;40m\"$transfer\"[0m \n2024/04/01 08:21:45 [1;32;40mt[0m: [1;31;40mmishandled exception[0m found, the function invoke path is as follows\n2024/04/01 08:21:45 vunlnerability 0 as follows:\n2024/04/01 08:21:45 wasm backtrace:[*, |, 0, 0, |, |, |, |, |, 0, |, |, 4294821199..., ]\n2024/04/01 08:21:45 !withdraw\n2024/04/01 08:21:45 !sys_call\n2024/04/01 08:21:45 call contract:[1;34;40m\"asset\"[0m, function:[1;34;40m$transfer[0m, but not check the result\n2024/04/01 08:21:45 time: overflow vulnerability found\n2024/04/01 08:21:45 use time: 112.05463668099765\n"
+    result = process_python_rust(log)
     return jsonify({"message": result}), 200
