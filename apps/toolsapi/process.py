@@ -310,7 +310,7 @@ def process_log_ccanalyzer(raw_output):
         else:
             recommendation = "进行进一步的检查"
 
-        recommendList.append(f"{recommendation} - 位置: {position_clean}")
+        recommendList.append(f"位置: {position_clean}, {category}. 修复建议：{recommendation}")
 
     # # Initialize security level flags
     has_external_library = any("External Library" in v for v in vulnerList)
