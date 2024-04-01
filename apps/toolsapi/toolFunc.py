@@ -1,5 +1,5 @@
 # 使用脚本执行工作的代码放在toolExecute.py文件中
-from .process import process_slither_data, process_log_slither, save_to_csv, process_log_evulhunter, process_log_rust, process_log_ccanalyzer
+from .process import process_log_slither, save_to_csv, process_log_evulhunter, process_log_rust, process_log_ccanalyzer, analysisData, recommendData
 
 from flask import (
     Blueprint,
@@ -996,3 +996,9 @@ def analyzeContracts_analysis():
             {"message": "Analysis completed", "exit_code": exit_code, "logs": logs, "time": execution_time}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@bp.route("/contractsAnalyze/data", methods=['GET'])
+def analyzeContracts_data():
+    result = recommendData()
+    return jsonify({"message": result}), 200

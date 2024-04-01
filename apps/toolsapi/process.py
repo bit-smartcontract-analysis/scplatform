@@ -7,6 +7,21 @@ import csv
 project_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
 
+def save_to_csv(contract_name, bugs_name, logs):
+    save_dir = os.path.join(project_root_path, "media/logs")
+    os.makedirs(save_dir, exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    timestamp_log = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    field_names = ["contract_name", "bugs_name", "timestamp", "logs"]
+    save_path = os.path.join(save_dir, f"{timestamp}.csv")
+    data = [contract_name, bugs_name, timestamp_log, logs]
+
+    with open(save_path, mode='w', newline='') as csv_file:
+        writer = csv.writer(csv_file)
+        writer.writerow(field_names)
+        writer.writerow(data)
+
+
 def process_slither_data(log_data):
     detector_blocks = log_data.split('INFO:Detectors:')[1:]
 
@@ -33,7 +48,8 @@ def process_log_slither(log_content):
         "data": {
             "vulnerList": [],
             "securityLevel": "",
-            "evaluate": ""
+            "evaluate": "",
+            "vulnerRecommend": []
         }
     }
 
@@ -75,31 +91,18 @@ def process_log_slither(log_content):
     security_level = result['data']['securityLevel']
     vulner_count = len(result['data']['vulnerList'])
     if security_level == "High":
-        result['data']['evaluate'] = f"Contract contains {vulner_count} high severity vulnerabilities. Immediate action required."
+        result['data']['evaluate'] = f"合约包含{vulner_count} 个高风险漏洞，需要立即修复."
     elif security_level == "Medium":
-        result['data']['evaluate'] = f"Contract contains {vulner_count} medium severity issues. Review recommended."
+        result['data']['evaluate'] = f"合约包含{vulner_count} 个中风险漏洞，需要重新审阅代码."
     elif security_level == "Low":
-        result['data']['evaluate'] = f"Contract contains {vulner_count} low severity issues. Minimal risk."
+        result['data']['evaluate'] = f"合约{vulner_count}个低风险漏洞."
     else:
         result['data']['securityLevel'] = "None"
-        result['data']['evaluate'] = "No vulnerabilities found. Contract is safe."
+        result['data']['evaluate'] = "没有风险的合约."
+
+    result['data']['vulnerRecommend'] = analysisData(result['data']['vulnerList'])
 
     return result
-
-
-def save_to_csv(contract_name, bugs_name, logs):
-    save_dir = os.path.join(project_root_path, "media/logs")
-    os.makedirs(save_dir, exist_ok=True)
-    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-    timestamp_log = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    field_names = ["contract_name", "bugs_name", "timestamp", "logs"]
-    save_path = os.path.join(save_dir, f"{timestamp}.csv")
-    data = [contract_name, bugs_name, timestamp_log, logs]
-
-    with open(save_path, mode='w', newline='') as csv_file:
-        writer = csv.writer(csv_file)
-        writer.writerow(field_names)
-        writer.writerow(data)
 
 
 def process_log_evulhunter(log):
@@ -268,3 +271,94 @@ def process_log_ccanalyzer(raw_output):
     }
 
     return result
+
+
+def analysisData(vulnerList):
+    # vulnerList = [
+    #     "Reentrancy in Reentrance.withdraw (#21-31): External calls: - msg.sender.call.value(_amount)() (#24-27) State variables written after the call(s): - balances (#27-31)",
+    #     "Reentrance.donate (#13-17) should be declared external Reentrance.balanceOf (#17-21) should be declared external Reentrance.withdraw (#21-31) should be declared external Reentrance.fallback (#32) should be declared external",
+    #     "Detected issues with version pragma in #7-9): it allows old versions",
+    #     "Low level call in Reentrance.withdraw (#21-31): -msg.sender.call.value(_amount)() #24-27",
+    #     "Parameter '_to' of Reentrance.donate (#13) is not in mixedCase Parameter '_who' of Reentrance.balanceOf (#17) is not in mixedCase Parameter '_amount' of Reentrance.withdraw (#21-22) is not in mixedCase"
+    # ]
+
+    vulnerability_map = {
+        "Reentrancy": "重入漏洞. 修复建议: 使用Checks-Effects-Interactions模式.Check:：首先,验证所有条件和要求; Effects: 在调用外部合约之前更新合约的状态; Interactions:最后与其他合约交互（例如发送以太币）.",
+        "Low level call": "低级别调用(call). 修复建议: 避免调用低阶函数(call, delegatecall, callcode), 或是验证返回函数.",
+        "be declared external": "被外部接口调用. 修复建议: 尽可能限制外部调用的使用.",
+        "Detected issues with version pragma": "版本问题. 修复建议: 使用0.8.x以上的版本.",
+        "external calls inside a loop": "循环内的外部调用. 修复建议: 尽可能限制外部调用的使用，尤其是在循环内.",
+        "tx.origin for authorization": "tx.origin授权. 修复建议: 始终使用 msg.sender 而不是 tx.origin 进行身份验证和授权. msg.sender准确地代表当前调用的直接发起者, 确保只有直接与您的合约交互的实体才能通过身份验证.",
+        "Usage of \"sha3()\" should be replaced with \"keccak256()\"": "错误的使用废弃函数sha3(). 修复建议: 使用keccak256()代替sha3().",
+        "Usage of \"throw\" should be replaced with \"revert()\"": "错误的使用废弃函数throw(). 修复建议: 使用revert()代替throw()",
+        "Usage of \"suicide()\" should be replaced with \"selfdestruct()\"": "错误的使用废弃函数suicide(). 修复建议: 使用selfdestruct()代替suicide()",
+        "Contract locking ether found": "合约中以太币被锁. 修复建议: 确保您的合约包含允许提取合约中存储的以太币的功能。这可以是只能由授权地址调用的专用提款功能，也可以是用于去中心化提款的更开放的拉式支付系统.",
+        "uses delegatecall": "代理问题. 修复建议: 在使用 delegatecall 之前，请充分理解其含义。它在您的合约存储上下文中执行另一个合约的代码，这意味着被调用的合约可以更改您的合约的状态.",
+        "sends eth to arbitrary user Dangerous calls": "发送以太币给任意用户. 修复建议: 在发送 ETH 之前, 请确保收件人地址有效且符合预期.这可能涉及检查该地址是否不是零地址 (0x0),并根据上下文确保它属于允许的地址列表.",
+        "allows anyone to destruct the contract": "允许任何人摧毁合约. 修复建议: 将调用自毁功能的能力限制为选定的一组地址，通常仅限于合约所有者或一组受信任的管理员。这可以通过修改器来实现，修改器根据授权地址列表检查调用者的地址.",
+        "incorrect ERC20 function interface(s)": "不正确的ERC20功能接口. 修复建议: 确保您的合约实现了ERC20标准中指定的所有强制功能和事件.这包括totalSupply、balanceOf、transfer、transferFrom、approve和allowance函数,以及Transfer和Approval事件.",
+        "a dangerous strict equality": "危险的等号. 修复建议: 不使用==符号.",
+        "is not in mixedCase": "大小写混合. 修复建议: 重新检查代码,尤其大小写",
+        "a local variable never initialiazed": "从未初始化的局部变量. 修复建议: 声明局部变量时,始终显式初始化它们.这种做法可确保您的变量在使用之前具有已知的状态."
+    }
+
+    adjusted_mapped_results = []
+
+    # Perform the iteration and mapping process again, now including line numbers
+    for item in vulnerList:
+        for key, value in vulnerability_map.items():
+            if key in item:
+                # Extract the line numbers using a regular expression
+                line_numbers = re.findall(r'#\d+-\d+', item)
+                line_numbers_str = " ".join(line_numbers)  # Join all found line numbers with a space
+                # Append the vulnerability translation along with line numbers to the results list
+                if line_numbers_str:  # Only append if line numbers were found
+                    adjusted_mapped_results.append(f"在{line_numbers_str}行, {value} ")
+                else:
+                    adjusted_mapped_results.append(value)
+
+    return adjusted_mapped_results
+
+
+
+def recommendData():
+    # Redefine the vulnerList with the given vulnerabilities
+    vulnerList = [
+        "Reentrancy in Reentrance.withdraw (#21-31): External calls: - msg.sender.call.value(_amount)() (#24-27) State variables written after the call(s): - balances (#27-31)",
+        "Reentrance.donate (#13-17) should be declared external Reentrance.balanceOf (#17-21) should be declared external Reentrance.withdraw (#21-31) should be declared external Reentrance.fallback (#32) should be declared external",
+        "Detected issues with version pragma in #7-9): it allows old versions",
+        "Low level call in Reentrance.withdraw (#21-31): -msg.sender.call.value(_amount)() #24-27",
+        "Parameter '_to' of Reentrance.donate (#13) is not in mixedCase Parameter '_who' of Reentrance.balanceOf (#17) is not in mixedCase Parameter '_amount' of Reentrance.withdraw (#21-22) is not in mixedCase"
+    ]
+
+    # Define an additional mapping for recommendations based on the identified vulnerabilities
+    recommendation_map = {
+        "Reentrancy": "使用Checks-Effects-Interactions模式.Check:：首先,验证所有条件和要求; Effects: 在调用外部合约之前更新合约的状态; Interactions:最后与其他合约交互（例如发送以太币）.",
+        "Low level call": "低级别调用(call)",
+        "be declared external": "避免调用低阶函数(call, delegatecall, callcode). 或是验证返回函数",
+        "Detected issues with version pragma": "使用0.8.x以上的版本",
+        "external calls inside a loop": "尽可能限制外部调用的使用，尤其是在循环内",
+        "tx.origin for authorization": "始终使用 msg.sender 而不是 tx.origin 进行身份验证和授权. msg.sender准确地代表当前调用的直接发起者, 确保只有直接与您的合约交互的实体才能通过身份验证.",
+        "Usage of \"sha3()\" should be replaced with \"keccak256()\"": "使用keccak256()代替sha3()",
+        "Usage of \"throw\" should be replaced with \"revert()\"": "使用revert()代替throw()",
+        "Usage of \"suicide()\" should be replaced with \"selfdestruct()\"": "使用selfdestruct()代替suicide()",
+        "Contract locking ether found": "确保您的合约包含允许提取合约中存储的以太币的功能。这可以是只能由授权地址调用的专用提款功能，也可以是用于去中心化提款的更开放的拉式支付系统",
+        "uses delegatecall": "在使用 delegatecall 之前，请充分理解其含义。它在您的合约存储上下文中执行另一个合约的代码，这意味着被调用的合约可以更改您的合约的状态。",
+        "sends eth to arbitrary user Dangerous calls": "在发送 ETH 之前，请确保收件人地址有效且符合预期。这可能涉及检查该地址是否不是零地址 (0x0)，并根据上下文确保它属于允许的地址列表。",
+        "allows anyone to destruct the contract": "将调用自毁功能的能力限制为选定的一组地址，通常仅限于合约所有者或一组受信任的管理员。这可以通过修改器来实现，修改器根据授权地址列表检查调用者的地址",
+        "incorrect ERC20 function interface(s)": "确保您的合约实现了 ERC20 标准中指定的所有强制功能和事件。这包括totalSupply、balanceOf、transfer、transferFrom、approve和allowance函数，以及Transfer和Approval事件。",
+        "a dangerous strict equality": "不使用==符号",
+        "is not in mixedCase": "重新检查代码",
+        "a local variable never initialiazed": "初始化局部变量"
+    }
+
+    # Initialize a list to hold the recommendation results
+    recommendList = []
+
+    # Iterate through vulnerList to apply the recommendations based on the identified issues
+    for item in vulnerList:
+        for key, value in recommendation_map.items():
+            if key in item:
+                recommendList.append(value)
+
+    return recommendList
