@@ -1063,7 +1063,7 @@ def analyzeContracts_analysis():
 def upload_analuze_cplus():
     # host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
     host_dir_path = os.path.join(current_app.config['CPLUS_CONTRACT_IMAGE_SAVE_PATH']).replace('\\', '/')
-    print(host_dir_path)
+    # print(host_dir_path)
     # Clear existing files in the directory
     if os.path.exists(host_dir_path):
         for filename in os.listdir(host_dir_path):

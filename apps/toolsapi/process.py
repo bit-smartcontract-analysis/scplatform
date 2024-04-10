@@ -4,7 +4,7 @@ from datetime import datetime
 import csv
 from typing import Dict, Any
 import xml.etree.ElementTree as ET
-
+from flask import current_app
 
 project_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
@@ -524,7 +524,8 @@ def analysisCPlusPlusData(error_list):
 
 
 def processCPlusPlus_Data():
-    tree = ET.parse('D:/Wei-Project/github/scplatform/media/tmpContractsCPlus/cppcheck_results.xml')
+    host_dir_path = os.path.join(current_app.config['CPLUS_CONTRACT_IMAGE_SAVE_PATH']).replace('\\', '/')
+    tree = ET.parse(f'{host_dir_path}/cppcheck_results.xml')
     root = tree.getroot()
 
     # Filter for errors with severity "error" or "style"
