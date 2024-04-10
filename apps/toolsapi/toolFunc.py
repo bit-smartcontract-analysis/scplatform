@@ -1061,7 +1061,9 @@ def analyzeContracts_analysis():
 
 @bp.route("/contractsAnalyze/upload_cc", methods=['POST'])
 def upload_analuze_cplus():
-    host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
+    # host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
+    host_dir_path = os.path.join(current_app.config['CPLUS_CONTRACT_IMAGE_SAVE_PATH']).replace('\\', '/')
+    print(host_dir_path)
     # Clear existing files in the directory
     if os.path.exists(host_dir_path):
         for filename in os.listdir(host_dir_path):
@@ -1092,6 +1094,62 @@ def upload_analuze_cplus():
 
     # Dynamically construct the Docker command using the host_dir_path
     docker_command = f"docker run --rm -v {host_dir_path}:/src neszt/cppcheck-docker /bin/sh --enable=all --xml --output-file=/src/cppcheck_results.xml"
+
+    try:
+        # Use shlex.split to handle the command properly
+        args = shlex.split(docker_command)
+
+        # Execute the Docker command
+        subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+
+        # After Cppcheck finishes, read the results file
+        if os.path.exists(results_file_path):
+            with open(results_file_path, 'r') as file:
+                file.read()
+                final_result = processCPlusPlus_Data()
+            return final_result
+        else:
+            return "Analysis completed, but no results file was found."
+    except subprocess.CalledProcessError as e:
+        return f"Subprocess error during analysis: {e.stderr}"
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
+
+@bp.route("/contractsAnalyze/upload_cc_linux", methods=['POST'])
+def upload_analuze_cplus_linux():
+    host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
+    # Clear existing files in the directory
+    if os.path.exists(host_dir_path):
+        for filename in os.listdir(host_dir_path):
+            file_path = os.path.join(host_dir_path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
+    else:
+        # Create the directory if it does not exist
+        os.makedirs(host_dir_path)
+
+    time.sleep(5)
+
+    uploaded_files = request.files.getlist("files")
+    print(uploaded_files)
+    for file in uploaded_files:
+        if file:
+            filename = file.filename
+            save_path = os.path.join(host_dir_path, filename)
+            file.save(save_path)
+
+    time.sleep(3)
+    results_file_path = os.path.join(host_dir_path, 'cppcheck_results.xml')
+
+    # Dynamically construct the Docker command using the host_dir_path
+    # docker_command = f"docker run --rm -v {host_dir_path}:/src neszt/cppcheck-docker /bin/sh --enable=all --xml --output-file=/src/cppcheck_results.xml"
+    docker_command = f"docker run --rm -v {host_dir_path}:/src neszt/cppcheck-docker cppcheck --enable=all --xml --output-file=/src/cppcheck_results.xml /src"
 
     try:
         # Use shlex.split to handle the command properly
