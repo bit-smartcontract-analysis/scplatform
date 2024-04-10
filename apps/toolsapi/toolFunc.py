@@ -1,6 +1,5 @@
 # 使用脚本执行工作的代码放在toolExecute.py文件中
-from .process import process_log_slither, save_to_csv, process_log_evulhunter, process_log_rust, process_log_ccanalyzer, process_python_rust
-
+from .process import process_log_slither, save_to_csv, process_log_evulhunter, process_log_rust, process_log_ccanalyzer, process_python_rust, processCPlusPlus, processCPlusPlus_Data
 from flask import (
     Blueprint,
     render_template,
@@ -8,7 +7,8 @@ from flask import (
     g,
     request,
     current_app,
-    jsonify
+    jsonify,
+    Response
 )
 import docker
 import os
@@ -16,6 +16,9 @@ from .forms import UploadContractForm
 from utils import restful
 import time
 import subprocess
+import shlex
+from werkzeug.utils import secure_filename
+import shutil
 
 
 bp = Blueprint("toolFunc", __name__, url_prefix="/toolFunc")
@@ -998,8 +1001,119 @@ def analyzeContracts_analysis():
         return jsonify({"error": str(e)}), 500
 
 
-@bp.route("/contractsAnalyze/data", methods=['GET'])
-def analyzeContracts_data():
-    log = "2024/04/01 08:19:53 Start detect Smart Contract time\n2024/04/01 08:19:53 Smart Contract = time\n2024/04/01 08:21:45 [1;32;40mt[0m: [1;31;40msys_time_dependency[0m found, the function invoke path is as follows\n2024/04/01 08:21:45 vunlnerability 0 as follows:\n2024/04/01 08:21:45 wasm backtrace:[*, |, 0, 0, |, |, |, |, |, 0, |, |, 4294821199..., ]\n2024/04/01 08:21:45 !withdraw\n2024/04/01 08:21:45 Get timestamp in function: [1;32;40m$chrono::offset::local::Local::now::h320e4c600bfb5e18[0m, call contract:[1;34;40m\"asset\"[0m, function:[1;34;40m\"$transfer\"[0m \n2024/04/01 08:21:45 [1;32;40mt[0m: [1;31;40mmishandled exception[0m found, the function invoke path is as follows\n2024/04/01 08:21:45 vunlnerability 0 as follows:\n2024/04/01 08:21:45 wasm backtrace:[*, |, 0, 0, |, |, |, |, |, 0, |, |, 4294821199..., ]\n2024/04/01 08:21:45 !withdraw\n2024/04/01 08:21:45 !sys_call\n2024/04/01 08:21:45 call contract:[1;34;40m\"asset\"[0m, function:[1;34;40m$transfer[0m, but not check the result\n2024/04/01 08:21:45 time: overflow vulnerability found\n2024/04/01 08:21:45 use time: 112.05463668099765\n"
-    result = process_python_rust(log)
-    return jsonify({"message": result}), 200
+
+# @bp.route("/contractsAnalyze/cc", methods=['GET'])
+# def analyze_cc():
+#     host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
+#     results_file_path = os.path.join(host_dir_path, 'cppcheck_results.xml')
+#
+#     # Dynamically construct the Docker command using the host_dir_path
+#     docker_command = f"docker run --rm -v {host_dir_path}:/src neszt/cppcheck-docker /bin/sh --enable=all --xml --output-file=/src/cppcheck_results.xml"
+#
+#     try:
+#         # Use shlex.split to handle the command properly
+#         args = shlex.split(docker_command)
+#
+#         # Execute the Docker command
+#         subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+#
+#         # After Cppcheck finishes, read the results file
+#         if os.path.exists(results_file_path):
+#             with open(results_file_path, 'r') as file:
+#                 results = file.read()
+#             return Response(results, mimetype='application/xml')
+#         else:
+#             return "Analysis completed, but no results file was found."
+#     except subprocess.CalledProcessError as e:
+#         return f"Subprocess error during analysis: {e.stderr}"
+#     except Exception as e:
+#         return f"An error occurred: {str(e)}"
+
+
+# @bp.route("/contractsAnalyze/upload", methods=['POST'])
+# def upload_files():
+#     host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
+#     # Clear existing files in the directory
+#     if os.path.exists(host_dir_path):
+#         for filename in os.listdir(host_dir_path):
+#             file_path = os.path.join(host_dir_path, filename)
+#             try:
+#                 if os.path.isfile(file_path) or os.path.islink(file_path):
+#                     os.unlink(file_path)
+#                 elif os.path.isdir(file_path):
+#                     shutil.rmtree(file_path)
+#             except Exception as e:
+#                 print('Failed to delete %s. Reason: %s' % (file_path, e))
+#     else:
+#         # Create the directory if it does not exist
+#         os.makedirs(host_dir_path)
+#
+#     uploaded_files = request.files.getlist("files")
+#     print(uploaded_files)
+#     for file in uploaded_files:
+#         if file:
+#             filename = file.filename
+#             save_path = os.path.join(host_dir_path, filename)
+#             file.save(save_path)
+#
+#     return 'Files uploaded successfully'
+
+
+@bp.route("/contractsAnalyze/upload_cc", methods=['POST'])
+def upload_analuze_cplus():
+    host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
+    # Clear existing files in the directory
+    if os.path.exists(host_dir_path):
+        for filename in os.listdir(host_dir_path):
+            file_path = os.path.join(host_dir_path, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
+    else:
+        # Create the directory if it does not exist
+        os.makedirs(host_dir_path)
+
+    time.sleep(5)
+
+    uploaded_files = request.files.getlist("files")
+    print(uploaded_files)
+    for file in uploaded_files:
+        if file:
+            filename = file.filename
+            save_path = os.path.join(host_dir_path, filename)
+            file.save(save_path)
+
+    time.sleep(3)
+    results_file_path = os.path.join(host_dir_path, 'cppcheck_results.xml')
+
+    # Dynamically construct the Docker command using the host_dir_path
+    docker_command = f"docker run --rm -v {host_dir_path}:/src neszt/cppcheck-docker /bin/sh --enable=all --xml --output-file=/src/cppcheck_results.xml"
+
+    try:
+        # Use shlex.split to handle the command properly
+        args = shlex.split(docker_command)
+
+        # Execute the Docker command
+        subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
+
+        # After Cppcheck finishes, read the results file
+        if os.path.exists(results_file_path):
+            with open(results_file_path, 'r') as file:
+                file.read()
+                final_result = processCPlusPlus_Data()
+            return final_result
+        else:
+            return "Analysis completed, but no results file was found."
+    except subprocess.CalledProcessError as e:
+        return f"Subprocess error during analysis: {e.stderr}"
+    except Exception as e:
+        return f"An error occurred: {str(e)}"
+
+
+@bp.route("/contractsAnalyze/test", methods=['GET'])
+def test_analyze():
+    return processCPlusPlus_Data()

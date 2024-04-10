@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import csv
 from typing import Dict, Any
+import xml.etree.ElementTree as ET
 
 
 project_root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
@@ -425,3 +426,122 @@ def recommendData():
                 recommendList.append(value)
 
     return recommendList
+
+
+def processCPlusPlus():
+    tree = ET.parse('D:/Wei-Project/github/scplatform/media/tmpContractsCPlus/cppcheck_results.xml')
+    root = tree.getroot()
+
+    # Filter for errors with severity "error" or "style"
+    filtered_errors = []
+    for error in root.findall('.//error'):
+        if error.get('severity') in ['error', 'style']:
+            error_details = {
+                'id': error.get('id'),
+                'severity': error.get('severity'),
+                'message': error.get('msg'),
+                'locations': [
+                    {'file': loc.get('file'), 'line': loc.get('line'), 'column': loc.get('column')}
+                    for loc in error.findall('.//location')
+                ]
+            }
+            filtered_errors.append(error_details)
+
+    return filtered_errors
+
+
+# error_list = [
+#     {
+#         "id": "knownConditionTrueFalse",
+#         "locations": [
+#             {
+#                 "column": "16",
+#                 "file": "/src/basic_iterator.cc",
+#                 "line": "83"
+#             },
+#             {
+#                 "column": "13",
+#                 "file": "/src/basic_iterator.cc",
+#                 "line": "63"
+#             }
+#         ],
+#         "message": "Return value '!ret' is always true",
+#         "severity": "style"
+#     },
+#     {
+#         "id": "syntaxError",
+#         "locations": [
+#             {
+#                 "column": "25",
+#                 "file": "/bin/sh",
+#                 "line": "1"
+#             }
+#         ],
+#         "message": "The code contains unhandled character(s) (character code=209). Neither unicode nor extended ascii is supported.",
+#         "severity": "error"
+#     }
+# ]
+
+
+def analysisCPlusPlusData(error_list):
+    response = {
+        "msg": "success",
+        "code": "0",
+        "data": {
+            "vulnerList": [],  # This will be filled with the details of filtered_errors
+            "securityLevel": "None",  # To be determined
+            "evaluate": "Assessment of vulnerabilities based on cppcheck results."
+        }
+    }
+
+    # Assuming filtered_errors contains the list of filtered errors
+    for error in error_list:
+        # Adjusting severity for display in the vulnerList
+        display_severity = "Low" if error['severity'] == 'style' else "High" if error[
+                                                                                    'severity'] == 'error' else "Unknown"
+        locations_str = "; ".join(
+            [f"File: {loc['file']}, Line: {loc['line']}, Column: {loc['column']}" for loc in error['locations']])
+
+        vulnerability = {
+            "ID": error['id'],
+            "Severity": display_severity,  # Adjusting based on your requirement
+            "Message": error['message'],
+            "Locations": locations_str
+        }
+        response["data"]["vulnerList"].append(vulnerability)
+
+    # Determining the overall security level based on the highest severity found
+    severities = [error['severity'] for error in error_list]
+    if "error" in severities:
+        response["data"]["securityLevel"] = "High"
+    elif "style" in severities:
+        response["data"]["securityLevel"] = "Low"
+    else:
+        response["data"]["securityLevel"] = "None"
+
+    # Now, the response object is ready and adjusted to your specifications
+    return response
+
+
+def processCPlusPlus_Data():
+    tree = ET.parse('D:/Wei-Project/github/scplatform/media/tmpContractsCPlus/cppcheck_results.xml')
+    root = tree.getroot()
+
+    # Filter for errors with severity "error" or "style"
+    filtered_errors = []
+    for error in root.findall('.//error'):
+        if error.get('severity') in ['error', 'style']:
+            error_details = {
+                'id': error.get('id'),
+                'severity': error.get('severity'),
+                'message': error.get('msg'),
+                'locations': [
+                    {'file': loc.get('file'), 'line': loc.get('line'), 'column': loc.get('column')}
+                    for loc in error.findall('.//location')
+                ]
+            }
+            filtered_errors.append(error_details)
+
+    results = analysisCPlusPlusData(filtered_errors)
+
+    return results
