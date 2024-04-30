@@ -697,26 +697,21 @@ def tool_selection():
 
 @bp.post("/contractsAnalyze/slither")
 def analyzeContracts_slither():
-    # Upload contracts
     form = UploadContractForm(request.files)
-    if form.validate():
-        file = form.file.data
-        filename = file.filename
-        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+    if not form.validate():
+        return jsonify({"error": form.messages[0]}), 400
+    file = form.file.data
+    filename = file.filename
+    contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
 
-        # remove previous the same name of contacts
-        try:
-            os.remove(contract_path)
-        except OSError as e:
-            # Handle the error (e.g., log it, notify someone, etc.)
-            print(f"Error: None previous contracts")
-        # Upload new contracts
-        file.save(contract_path)
-        # return restful.ok(data={"contract_url": filename})
-    else:
-        message = form.messages[0]
+    try:
+        os.remove(contract_path)
+    except OSError as e:
+        # Handle the error (e.g., log it, notify someone, etc.)
+        print(f"Error: None previous contracts")
+    # Upload new contracts
+    file.save(contract_path)
 
-    # analyze contracts
     client = docker.from_env()
     contract = filename
     if not contract:
@@ -737,31 +732,20 @@ def analyzeContracts_slither():
         if image is None:
             client.images.pull(image_name)
 
-        # Define the volume mapping
         volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
-
-        # Define the command
         command = f"slither {contract_path} --json /output.json"
-
-        # Create and run the container
         container = client.containers.create(image_name, command=command, volumes=volumes)
         start_time = time.time()
         container.start()
-
-        # Wait for the container to finish
         result = container.wait()
-
-        # Retrieve the logs
         logs = container.logs().decode('utf-8')
 
-        # Optionally, stop and remove the container
         container.stop()
         end_time = time.time()
         container.remove()
         execution_time = end_time - start_time
         bugs = "Reentrancy"
         save_to_csv(contract, bugs, logs)
-        # vuln_list = process_slither_data(logs)
         processData = process_log_slither(logs)
         return jsonify(processData), 200
     except Exception as e:
@@ -837,20 +821,18 @@ def analyzeContracts_evulhunter():
 @bp.post("/contractsAnalyze/wana_rust")
 def analyzeContracts_wana_analysis():
     form = UploadContractForm(request.files)
-    if form.validate():
-        file = form.file.data
-        filename = file.filename
-        contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
-        # remove previous the same name of contacts
-        try:
-            os.remove(contract_path)
-        except OSError as e:
-            # Handle the error (e.g., log it, notify someone, etc.)
-            print(f"None previous contracts")
-        file.save(contract_path)
-        # return restful.ok(data={"contract_url": filename})
-    else:
-        message = form.messages[0]
+    if not form.validate():
+        return jsonify({"error": form.messages[0]}), 400
+    file = form.file.data
+    filename = file.filename
+    contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+
+    try:
+        os.remove(contract_path)
+    except OSError as e:
+        # Handle the error (e.g., log it, notify someone, etc.)
+        print(f"None previous contracts")
+    file.save(contract_path)
 
     # analyze contracts
     client = docker.from_env()
@@ -892,11 +874,8 @@ def analyzeContracts_wana_analysis():
         end_time = time.time()
         execution_time = end_time - start_time
         container.remove()
-
-        # print(logs)
         bugs = "Reentrancy"
         save_to_csv(contract, bugs, logs)
-
         return jsonify(process_python_rust(logs)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -999,64 +978,6 @@ def analyzeContracts_analysis():
             {"message": "Analysis completed", "exit_code": exit_code, "logs": logs, "time": execution_time}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-
-# @bp.route("/contractsAnalyze/cc", methods=['GET'])
-# def analyze_cc():
-#     host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
-#     results_file_path = os.path.join(host_dir_path, 'cppcheck_results.xml')
-#
-#     # Dynamically construct the Docker command using the host_dir_path
-#     docker_command = f"docker run --rm -v {host_dir_path}:/src neszt/cppcheck-docker /bin/sh --enable=all --xml --output-file=/src/cppcheck_results.xml"
-#
-#     try:
-#         # Use shlex.split to handle the command properly
-#         args = shlex.split(docker_command)
-#
-#         # Execute the Docker command
-#         subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True)
-#
-#         # After Cppcheck finishes, read the results file
-#         if os.path.exists(results_file_path):
-#             with open(results_file_path, 'r') as file:
-#                 results = file.read()
-#             return Response(results, mimetype='application/xml')
-#         else:
-#             return "Analysis completed, but no results file was found."
-#     except subprocess.CalledProcessError as e:
-#         return f"Subprocess error during analysis: {e.stderr}"
-#     except Exception as e:
-#         return f"An error occurred: {str(e)}"
-
-
-# @bp.route("/contractsAnalyze/upload", methods=['POST'])
-# def upload_files():
-#     host_dir_path = 'D:/Wei-Project/github/scplatform/media/tmpContractsCPlus'
-#     # Clear existing files in the directory
-#     if os.path.exists(host_dir_path):
-#         for filename in os.listdir(host_dir_path):
-#             file_path = os.path.join(host_dir_path, filename)
-#             try:
-#                 if os.path.isfile(file_path) or os.path.islink(file_path):
-#                     os.unlink(file_path)
-#                 elif os.path.isdir(file_path):
-#                     shutil.rmtree(file_path)
-#             except Exception as e:
-#                 print('Failed to delete %s. Reason: %s' % (file_path, e))
-#     else:
-#         # Create the directory if it does not exist
-#         os.makedirs(host_dir_path)
-#
-#     uploaded_files = request.files.getlist("files")
-#     print(uploaded_files)
-#     for file in uploaded_files:
-#         if file:
-#             filename = file.filename
-#             save_path = os.path.join(host_dir_path, filename)
-#             file.save(save_path)
-#
-#     return 'Files uploaded successfully'
 
 
 @bp.route("/contractsAnalyze/upload_cc", methods=['POST'])

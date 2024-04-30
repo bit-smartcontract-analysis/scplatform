@@ -450,47 +450,15 @@ def processCPlusPlus():
     return filtered_errors
 
 
-# error_list = [
-#     {
-#         "id": "knownConditionTrueFalse",
-#         "locations": [
-#             {
-#                 "column": "16",
-#                 "file": "/src/basic_iterator.cc",
-#                 "line": "83"
-#             },
-#             {
-#                 "column": "13",
-#                 "file": "/src/basic_iterator.cc",
-#                 "line": "63"
-#             }
-#         ],
-#         "message": "Return value '!ret' is always true",
-#         "severity": "style"
-#     },
-#     {
-#         "id": "syntaxError",
-#         "locations": [
-#             {
-#                 "column": "25",
-#                 "file": "/bin/sh",
-#                 "line": "1"
-#             }
-#         ],
-#         "message": "The code contains unhandled character(s) (character code=209). Neither unicode nor extended ascii is supported.",
-#         "severity": "error"
-#     }
-# ]
-
-
 def analysisCPlusPlusData(error_list):
     response = {
         "msg": "success",
         "code": "0",
         "data": {
             "vulnerList": [],  # This will be filled with the details of filtered_errors
-            "securityLevel": "None",  # To be determined
-            "evaluate": "Assessment of vulnerabilities based on cppcheck results."
+            "recommendList": [],
+            "securityLevel": "",  # To be determined
+            "evaluate": ""
         }
     }
 
@@ -510,6 +478,14 @@ def analysisCPlusPlusData(error_list):
         }
         response["data"]["vulnerList"].append(vulnerability)
 
+        vulnerability_str = (
+            f"漏洞种类: {vulnerability['ID']}, "
+            f"危险等级: {vulnerability['Severity']}, "
+            f"漏洞详情: {vulnerability['Message']}, "
+            f"位置: {vulnerability['Locations']}"
+        )
+        response["data"]["recommendList"].append(vulnerability_str)
+
     # Determining the overall security level based on the highest severity found
     severities = [error['severity'] for error in error_list]
     if "error" in severities:
@@ -519,6 +495,9 @@ def analysisCPlusPlusData(error_list):
     else:
         response["data"]["securityLevel"] = "None"
 
+    vulnerList = response["data"]["vulnerList"]
+
+    response["data"]["evaluate"] = f"需要修复{len(vulnerList)}个安全漏洞"
     # Now, the response object is ready and adjusted to your specifications
     return response
 
