@@ -39,3 +39,5 @@ media/contracts/*.sol
 media/tmpContracts/*.wasm
 media/tmpContracts/*.sol
 media/logs/*.csv
+
+node_modules
