@@ -52,6 +52,9 @@ RUN npm install cnpm -g --registry=https://registry.npmmirror.com
 # Install MySQL Server
 RUN apt-get install -y mysql-server
 
+# Install Redis 
+RUN apt install -y redis-server
+
 # Verify installations
 RUN node -v
 RUN npm -v 
@@ -59,7 +62,7 @@ RUN python3 --version
 RUN pip3 --version
 RUN mysqld --version
 
-WORKDIR /opt/scplatform
+WORKDIR /opt/sc-platform
 COPY * ./ 
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN cnpm i   
