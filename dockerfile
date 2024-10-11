@@ -26,10 +26,8 @@ RUN apt-get install -y \
     curl \
     ca-certificates
 
-# Set the Python version as a build argument
+# Install python
 ARG PYTHON_VERSION=3.11.0
-
-# Download and compile Python from the Chinese mirror
 RUN cd /usr/src \
     && wget https://npmmirror.com/mirrors/python/$PYTHON_VERSION/Python-$PYTHON_VERSION.tgz \
     && tar xzf Python-$PYTHON_VERSION.tgz \
@@ -38,29 +36,36 @@ RUN cd /usr/src \
     && make -j$(nproc) \
     && make install \
     && rm -rf /usr/src/Python-$PYTHON_VERSION*
-
-# Install pip for the specified Python version from the Chinese mirror
-# RUN curl -fsSL https://npmmirror.com/mirrors/pip/get-pip.py -o get-pip.py \
-#     && python${PYTHON_VERSION%.*} get-pip.py \
-#     && rm get-pip.py
 RUN python3 -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --upgrade pip
-
-# Configure pip to use Aliyun mirror
 RUN pip${PYTHON_VERSION%.*} config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
-# Specify the Node.js version as a build argument
+# Install node lst 
 ARG NODE_VERSION=20.18.0
-
-# Download and install Node.js from the Chinese npm mirror
 RUN curl -fsSL https://npmmirror.com/mirrors/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -o node.tar.xz \
     && tar -xJf node.tar.xz -C /usr/local --strip-components=1 \
     && rm node.tar.xz
-
-# Set npm to use the Chinese npm registry mirror
 RUN npm config set registry https://registry.npmmirror.com
+
+# Install cnpm 
+RUN npm install cnpm -g --registry=https://registry.npmmirror.com
+
+# Install MySQL Server
+RUN apt-get install -y mysql-server
 
 # Verify installations
 RUN node -v
 RUN npm -v 
 RUN python3 --version
 RUN pip3 --version
+RUN mysqld --version
+
+WORKDIR /opt/scplatform
+COPY * ./ 
+RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN cnpm i   
+
+# Expose MySQL port
+EXPOSE 3306
+
+# cmd
+CMD ["/bin/bash", "/opt/sc-platform/script/docker-cmd.sh"]
