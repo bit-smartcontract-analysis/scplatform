@@ -9,6 +9,7 @@ echo '#######################################################################'
 echo '# Build and start sc-platform docker compose'
 if grep -q "Kylin" /etc/os-release; then
     echo "This is Kylin OS."
+    # fix me docker-compose not able to run
     docker build -t sc-platform . && docker run --name sc-platform --privileged -p 5000:5000 -e FLASK_ENV=development -e FLASK_APP=app.py --ulimit nofile=65536:65536 sc-platform
 else
     echo "This is not Kylin OS."
