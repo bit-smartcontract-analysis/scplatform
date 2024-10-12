@@ -7,14 +7,13 @@ docker image rm scplatform-sc-platform -f
 
 echo '#######################################################################'
 echo '# Build and start sc-platform docker compose'
-docker compose up -d
-# docker build --tag sc-platform:v0.0.1 \
-#   --file $SCRIPT_PWD/dockerfile \
-#   --progress=plain \
-#   --ulimit nofile=1024:4096 \
-#   $SCRIPT_PWD
-
-# docker run -d --name sc-platform sc-platform:v0.0.1 
+if grep -q "Kylin" /etc/os-release; then
+    echo "This is Kylin OS."
+    docker-compose up -d
+else
+    echo "This is not Kylin OS."
+    docker compose up -d
+fi
 
 echo '#######################################################################'
 echo '# Go back to home'
