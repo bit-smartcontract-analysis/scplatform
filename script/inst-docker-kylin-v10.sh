@@ -5,10 +5,9 @@
 sudo yum install -y docker
 
 # Install Docker Compose from a China mirror
-DOCKER_COMPOSE_VERSION="1.20.0" # Change this to the desired version
-sudo curl -L "https://mirrors.aliyun.com/docker-toolbox/linux/compose/$DOCKER_COMPOSE_VERSION/docker-compose-Linux-x86_64" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
-docker-compose --version
+DOCKER_COMPOSE_PLUGIN_VERSION="v2.17.2" # Change this to the desired version
+sudo curl -L "https://mirrors.aliyun.com/docker/compose/$(uname -s)/$(uname -m)/docker-compose-${DOCKER_COMPOSE_PLUGIN_VERSION}-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
 echo '#######################################################################'
 echo '# cat /etc/docker/daemon.json'

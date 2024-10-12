@@ -76,6 +76,27 @@ This project aims to provide different analysis tools for smart contracts on cha
   点击run_app.bat, 以及run_celery_mail.bat
   ```
 
+## Linux 操作系统宿主 Docker 一键部署
+
+先安装正确的 docker 版本并配置国内镜像
+```
+# Ubuntu 宿主
+./script/inst-docker-ubuntu.sh 
+
+# 银河麒麟 V10 宿主
+./script/inst-docker-kylin-v10.sh 
+```
+
+构建镜像并运行容器
+```
+./script/start-sc-platform.sh 
+```
+
+参考容器和开放端口如 `http://localhost:5000` 
+```
+docker ps -a
+```
+
 ## Requirements
 
 * Python 3.8+
