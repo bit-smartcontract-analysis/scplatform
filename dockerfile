@@ -72,11 +72,18 @@ RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
 COPY . ./ 
 # RUN cnpm i   
 
+# Expose flask 
+EXPOSE 5000 
+
 # Install Docker inside a docker
 RUN bash ./script/inst-docker-ubuntu.sh 
 
-# Expose MySQL port
-EXPOSE 5000 
+# Create SSH directory and set up necessary files
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+RUN echo 'root:yourpassword' | chpasswd
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+EXPOSE 22
 
 # cmd
 CMD ["/bin/bash", "/opt/sc-platform/script/docker-cmd.sh"]

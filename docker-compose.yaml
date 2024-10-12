@@ -8,6 +8,7 @@ services:
       - FLASK_APP=app.py
     ports:
       - "5000:5000"
+      - "2222:22"
     ulimits:
       nofile:
         soft: "65536"
