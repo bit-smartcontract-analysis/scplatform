@@ -25,7 +25,8 @@ RUN apt-get install -y \
     wget \
     curl \
     ca-certificates \
-    net-tools
+    net-tools \
+    sudo
 
 # Install python
 ARG PYTHON_VERSION=3.11.0
@@ -41,14 +42,14 @@ RUN python3 -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simp
 RUN pip${PYTHON_VERSION%.*} config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
 # Install node lst 
-ARG NODE_VERSION=20.18.0
-RUN curl -fsSL https://npmmirror.com/mirrors/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -o node.tar.xz \
-    && tar -xJf node.tar.xz -C /usr/local --strip-components=1 \
-    && rm node.tar.xz
-RUN npm config set registry https://registry.npmmirror.com
+# ARG NODE_VERSION=20.18.0
+# RUN curl -fsSL https://npmmirror.com/mirrors/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -o node.tar.xz \
+#     && tar -xJf node.tar.xz -C /usr/local --strip-components=1 \
+#     && rm node.tar.xz
+# RUN npm config set registry https://registry.npmmirror.com
 
 # Install cnpm 
-RUN npm install cnpm -g --registry=https://registry.npmmirror.com
+# RUN npm install cnpm -g --registry=https://registry.npmmirror.com
 
 # Install MySQL Server
 RUN apt-get install -y mysql-server
@@ -56,9 +57,10 @@ RUN apt-get install -y mysql-server
 # Install Redis 
 RUN apt install -y redis-server
 
+
 # Verify installations
-RUN node -v
-RUN npm -v 
+# RUN node -v
+# RUN npm -v 
 RUN python3 --version
 RUN pip3 --version
 RUN mysqld --version
@@ -68,12 +70,13 @@ COPY requirements.txt ./requirements.txt
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
 COPY . ./ 
-RUN cnpm i   
+# RUN cnpm i   
+
+# Install Docker inside a docker
+RUN bash ./script/inst-docker-ubuntu.sh 
 
 # Expose MySQL port
-EXPOSE 3306
 EXPOSE 5000 
-# EXPOSE 8000 
 
 # cmd
 CMD ["/bin/bash", "/opt/sc-platform/script/docker-cmd.sh"]

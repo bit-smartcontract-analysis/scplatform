@@ -1,5 +1,7 @@
 #!/bin/bash
 
+service docker start
+
 # Initialize MySQL data directory if it doesn't exist
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo 'Initializing database...'
