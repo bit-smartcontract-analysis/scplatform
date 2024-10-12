@@ -38,12 +38,10 @@ python3 -m flask db upgrade >> /tmp/flask-db.log
 
 # nohup bash -c 'npm run start >> /tmp/node.log 2>&1' >& /tmp/node.log &
 nohup bash -c 'redis-server >> /tmp/redis.log 2>&1' >& /tmp/redis.log &
-sleep 5
 nohup bash -c 'python3 app.py >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
 # nohup bash -c 'python3 -m flask run >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
 # nohup bash -c 'gunicorn -b :80 app >> /tmp/gunicorn.log' >& /tmp/gunicorn.log &
 # nohup bash -c ' >> /tmp/gunicorn.log' >& /tmp/gunicorn.log &
-sleep 5
 nohup bash -c 'celery -A app.mycelery worker --loglevel=info -P gevent >> /tmp/celery.log 2>&1' >& /tmp/celery.log &
 
 sleep infinity

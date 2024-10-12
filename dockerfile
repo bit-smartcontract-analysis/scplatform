@@ -65,7 +65,7 @@ RUN python3 --version
 RUN pip3 --version
 RUN mysqld --version
 
-WORKDIR /opt/sc-platform
+WORKDIR /root/sc-platform
 COPY requirements.txt ./requirements.txt 
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
@@ -85,5 +85,11 @@ RUN echo 'root:yourpassword' | chpasswd
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 EXPOSE 22
 
+# git
+RUN apt install -y git netcat 
+ 
+# zsh
+RUN bash ./script/init-ubuntu-host-with-ssh-zsh.sh
+
 # cmd
-CMD ["/bin/bash", "/opt/sc-platform/script/docker-cmd.sh"]
+CMD ["/bin/bash", "/root/sc-platform/script/docker-cmd.sh"]
