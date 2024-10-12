@@ -2,7 +2,16 @@
 
 # 银河麒麟安装正确版本的 docker 和 docker-compse 
 
-sudo yum install -y docker
+# sudo yum install -y docker
+# 卸载旧版本的 Docker（如果存在）
+sudo dnf remove -y docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
 
 # Install Docker Compose from a China mirror
 DOCKER_VERSION="20.10.21"
