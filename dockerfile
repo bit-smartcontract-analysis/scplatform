@@ -24,7 +24,8 @@ RUN apt-get install -y \
     libbz2-dev \
     wget \
     curl \
-    ca-certificates
+    ca-certificates \
+    net-tools
 
 # Install python
 ARG PYTHON_VERSION=3.11.0
@@ -63,12 +64,16 @@ RUN pip3 --version
 RUN mysqld --version
 
 WORKDIR /opt/sc-platform
-COPY * ./ 
+COPY requirements.txt ./requirements.txt 
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
+COPY . ./ 
 RUN cnpm i   
 
 # Expose MySQL port
 EXPOSE 3306
+EXPOSE 5000 
+# EXPOSE 8000 
 
 # cmd
 CMD ["/bin/bash", "/opt/sc-platform/script/docker-cmd.sh"]
