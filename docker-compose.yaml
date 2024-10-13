@@ -9,6 +9,7 @@ services:
     ports:
       - "5000:5000"
       - "2222:22"
+      - "8080:8080"
     ulimits:
       nofile:
         soft: "65536"

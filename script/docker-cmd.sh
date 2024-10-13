@@ -41,7 +41,7 @@ nohup bash -c 'redis-server >> /tmp/redis.log 2>&1' >& /tmp/redis.log &
 nohup bash -c 'python3 app.py >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
 # nohup bash -c 'python3 -m flask run >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
 # nohup bash -c 'gunicorn -b :80 app >> /tmp/gunicorn.log' >& /tmp/gunicorn.log &
-# nohup bash -c ' >> /tmp/gunicorn.log' >& /tmp/gunicorn.log &
 nohup bash -c 'celery -A app.mycelery worker --loglevel=info -P gevent >> /tmp/celery.log 2>&1' >& /tmp/celery.log &
+nohup bash -c 'cnpm run serve >> /tmp/cnpm.log 2>&1' >& /tmp/cnpm.log &
 
 sleep infinity

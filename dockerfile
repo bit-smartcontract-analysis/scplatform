@@ -48,8 +48,9 @@ RUN curl -fsSL https://npmmirror.com/mirrors/node/v$NODE_VERSION/node-v$NODE_VER
     && rm node.tar.xz
 RUN npm config set registry https://registry.npmmirror.com
 
-# Install cnpm 
+# Install cnpm and yarn
 RUN npm install cnpm -g --registry=https://registry.npmmirror.com
+RUN npm install yarn -g --registry=https://registry.npmmirror.com
 
 # Install MySQL Server
 RUN apt-get install -y mysql-server
@@ -57,10 +58,10 @@ RUN apt-get install -y mysql-server
 # Install Redis 
 RUN apt install -y redis-server
 
-
 # Verify installations
 RUN node -v
 RUN npm -v 
+RUN yarn -v 
 RUN python3 --version
 RUN pip3 --version
 RUN mysqld --version
@@ -72,9 +73,6 @@ RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
 COPY . ./ 
 RUN cnpm i   
 
-# Expose flask 
-EXPOSE 5000 
-
 # Install Docker inside a docker
 RUN bash ./script/inst-docker-ubuntu.sh 
 
@@ -83,13 +81,16 @@ RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
 RUN echo 'root:yourpassword' | chpasswd
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-EXPOSE 22
 
 # git
 RUN apt install -y git netcat 
  
 # zsh
 RUN bash ./script/init-ubuntu-host-with-ssh-zsh.sh
+
+EXPOSE 5000 
+EXPOSE 22
+EXPOSE 8080 
 
 # cmd
 CMD ["/bin/bash", "/root/sc-platform/script/docker-cmd.sh"]
