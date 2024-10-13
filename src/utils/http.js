@@ -32,9 +32,10 @@ class Http {
 		if(process.env.NODE_ENV == 'production'){
 			this.server_host = window.location.origin;
 		}else{
-			// See vue.config.js devServer.proxy
+      // See vue.config.js devServer.proxy
+      // 对于没有 hostname 的 api url 自动使用 proxy 配置, 如 "/foo/bar"
 			this.server_host = ""
-		} 
+		}
 		this.http = axios.create({
 			baseURL: this.server_host,
 			timeout: 1000*60

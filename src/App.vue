@@ -5,7 +5,7 @@
         <a href="/" class="brand"><strong>长安链</strong>合约检测平台</a>
         <div class="header-content">
           <!-- <div class="greet">欢迎，{{$auth.user.username}}[{{$auth.user.role.name}}]</div> -->
-          <div class="greet">欢迎，周杰伦</div>
+          <div class="greet">欢迎</div>
           <div class="signout" href="/">回到首页</div>
         </div>
       </el-header>
@@ -32,7 +32,7 @@
                 <span>详情介绍</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="0-1" :route="{ name: 'search' }"
+                <el-menu-item index="0-1" :route="{ name: 'intro' }"
                   >项目介绍</el-menu-item
                 >
                 <el-menu-item index="0-2" :route="{ name: 'language' }"
@@ -42,10 +42,10 @@
               <el-menu-item index="0-3" :route="{ name: 'banner' }"
                 >工具介绍</el-menu-item
               >
-              <el-sub-menu index="0-4">
+              <!-- <el-sub-menu index="0-4">
                 <template #title><span>item four</span></template>
                 <el-menu-item index="0-4-1">item one</el-menu-item>
-              </el-sub-menu>
+              </el-sub-menu> -->
             </el-sub-menu>
             <el-sub-menu index="1">
               <template #title>
@@ -53,7 +53,7 @@
                 <span>Dashboard</span>
               </template>
               <el-menu-item-group>
-                <el-menu-item index="1-1" :route="{ name: 'scTool' }"
+                <el-menu-item index="1-1" :route="{ name: 'tool' }"
                   >合约分析</el-menu-item
                 >
                 <el-menu-item index="1-2" :route="{ name: 'contractManage' }"
