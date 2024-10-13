@@ -32,7 +32,8 @@ class Http {
 		if(process.env.NODE_ENV == 'production'){
 			this.server_host = window.location.origin;
 		}else{
-			this.server_host = "http://127.0.0.1:5000"
+			// See vue.config.js devServer.proxy
+			this.server_host = ""
 		} 
 		this.http = axios.create({
 			baseURL: this.server_host,
