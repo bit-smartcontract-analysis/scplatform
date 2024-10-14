@@ -10,6 +10,9 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo 'Database initialized.'
 fi
 
+# 暴露 3306
+sudo sed -i.bak 's/^bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+
 echo 'Starting MySQL server...'
 mysqld_safe &
 
@@ -18,9 +21,6 @@ echo 'Waiting for MySQL to start...'
 until mysqladmin ping --silent; do
     sleep 1
 done
-
-
-sudo sed -i.bak 's/^bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf && sudo systemctl restart mysql
 
 # Set root password and create database if not already done
 if [ ! -f /var/lib/mysql/.mysql_initialized ]; then
