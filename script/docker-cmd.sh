@@ -16,7 +16,7 @@ sudo sed -i.bak 's/^mysqlx-bind-address.*/mysqlx-bind-address = 0.0.0.0/' /etc/m
 
 echo 'Starting MySQL server...'
 # mysqld_safe &
-service mysql start
+service mysql restart
 
 # Wait for MySQL to start
 echo 'Waiting for MySQL to start...'
