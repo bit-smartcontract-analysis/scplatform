@@ -27,7 +27,7 @@ done
 # Set root password and create database if not already done
 echo 'Setting root password and creating database...'
 mysql -u root <<-EOSQL
-    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '000000';
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '000000';
     CREATE DATABASE IF NOT EXISTS sc_platform;
     FLUSH PRIVILEGES;
 EOSQL
