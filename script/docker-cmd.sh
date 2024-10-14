@@ -2,6 +2,7 @@
 
 service docker start
 service ssh start
+service mysql stop
 
 # Initialize MySQL data directory if it doesn't exist
 if [ ! -d "/var/lib/mysql/mysql" ]; then
@@ -15,7 +16,7 @@ sudo sed -i.bak 's/^bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.con
 sudo sed -i.bak 's/^mysqlx-bind-address.*/mysqlx-bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
 
 echo 'Starting MySQL server...'
-mysqld_safe 
+mysqld_safe --skip-grant-tables
 # service mysql restart
 
 # Wait for MySQL to start
