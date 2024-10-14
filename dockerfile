@@ -91,6 +91,7 @@ RUN bash ./script/init-ubuntu-host-with-ssh-zsh.sh
 EXPOSE 5000 
 EXPOSE 22
 EXPOSE 8080 
+EXPOSE 3306 
 
 # cmd
 CMD ["/bin/bash", "/root/sc-platform/script/docker-cmd.sh"]
