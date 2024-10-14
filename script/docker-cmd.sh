@@ -19,6 +19,9 @@ until mysqladmin ping --silent; do
     sleep 1
 done
 
+
+sudo sed -i.bak 's/^bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf && sudo systemctl restart mysql
+
 # Set root password and create database if not already done
 if [ ! -f /var/lib/mysql/.mysql_initialized ]; then
     echo 'Setting root password and creating database...'
