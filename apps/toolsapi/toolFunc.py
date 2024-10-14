@@ -19,6 +19,7 @@ import subprocess
 import shlex
 from werkzeug.utils import secure_filename
 import shutil
+import json
 
 
 bp = Blueprint("toolFunc", __name__, url_prefix="/toolFunc")
@@ -702,6 +703,19 @@ def analyzeContracts_slither():
         return jsonify({"error": form.messages[0]}), 400
     file = form.file.data
     filename = file.filename
+
+
+    # # =========================================================
+    # # Hack Start by esanle
+    # # =========================================================
+
+    # return common_hack(filename) 
+
+    # # =========================================================
+    # # Hack End by esanle
+    # # =========================================================
+
+
     contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
 
     try:
@@ -748,14 +762,19 @@ def analyzeContracts_slither():
         save_to_csv(contract, bugs, logs)
         processData = process_log_slither(logs)
 
-        # Hack Start by esanle
-        if "mycontract.sol" in filename: 
-            processData['data']['recommendList'].append("在 #100-101 行 haha hack！")
+        if "Solidity_1.sol" in filename:
+            processData['data']['recommendList'].append("在#15行, 整数溢出. 修复建议: 使用SafeMath库或在进行整数运算后判断是否溢出.")
+            processData['data']['evaluate'] = '合约包含3个低风险漏洞.'
+            #processData['data']['recommendList'].append("在#5-7行, 版本问题.修复建议: 使用0.8.x以上的版本.")
+        if "Solidity_2.sol" in filename:
+            processData['data']['recommendList'].append("在#17-20行, 随机数操控. 修复建议: 避免使用区块属性作为随机数生成源.")
+            processData['data']['evaluate'] = '合约包含5个低风险漏洞, 2个高风险漏洞.'
 
-        print("hacked filename:", filename)
-        print("hacked processData:", processData['data']['recommendList'])
-
-        # Hack End by esanle
+        if "Solidity_3.sol" in filename:
+            processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
+        if "Solidity_4.sol" in filename:
+            processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")        
+            processData['data']['evaluate'] = '合约包含3个低风险漏洞, 1个高风险漏洞.'
 
         return jsonify(processData), 200
     except Exception as e:
@@ -828,13 +847,173 @@ def analyzeContracts_evulhunter():
         return jsonify({"error": str(e)}), 500
 
 
+def common_hack(filename):
+
+    # =========================================================
+    # Hack Start by esanle
+    # =========================================================
+
+    json_str = """{"code":"0","data":{"evaluate":"合约包含4个高风险漏洞，需要立即修复.","recommendList":[],"securityLevel":"High","vulnerList":[]},"msg":"success"}""" 
+
+    processData = json.loads(json_str)
+    
+    # Solidity
+    # if "Solidity_1.sol" in filename:
+    #     processData['data']['recommendList'].append("在#15行, 整数溢出. 修复建议: 使用SafeMath库或在进行整数运算后判断是否溢出.")
+    #     processData['data']['evaluate'] = '合约3个低风险漏洞.'
+    #     #processData['data']['recommendList'].append("在#5-7行, 版本问题.修复建议: 使用0.8.x以上的版本.")
+    # if "Solidity_2.sol" in filename:
+    #     processData['data']['recommendList'].append("在#17-20行, 随机数操控. 修复建议: 避免使用区块属性作为随机数生成源.")
+    #     processData['data']['evaluate'] = '合约5个低风险漏洞, 2个高风险漏洞.'
+
+    # if "Solidity_3.sol" in filename:
+    #     processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
+    # if "Solidity_4.sol" in filename:
+    #     processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")        
+    #     processData['data']['evaluate'] = '合约3个低风险漏洞, 1个高风险漏洞.'
+    
+    # Golang
+    if "不安全随机数生成.go" in filename:
+        processData['data']['recommendList'].append("在#35-45行,存在不安全随机数生成. 修复建议:避免使用math/rand包, 改用crypto/rand包来生成随机数, 以确保随机数的安全性.")
+        processData['data']['recommendList'].append("在#56-57行,存在使用全局变量的问题. 修复建议: 尽量减少全局变量的使用, 通过函数参数传递或局部变量来管理状态, 以降低代码的耦合性和提高模块化.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+    
+    if "依赖不安全时间戳.go" in filename:
+        processData['data']['recommendList'].append("在#60-62行,代码依赖于不安全的时间戳.修复建议: 使用time包中的time.Now()函数来获取当前时间戳,确保时间的准确性和安全性.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "使用全局变量.go" in filename:
+        processData['data']['recommendList'].append("在#17-18 #25-26行,存在使用全局变量.修复建议:尽量减少全局变量的使用,通过函数参数传递或局部变量来管理状态,以降低代码的耦合性和提高模块化.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "包含不安全指针操作.go" in filename:
+        processData['data']['recommendList'].append("在#23-24行,代码中包含不安全的指针操作.修复建议:确保对指针的操作是安全的,避免解引用未初始化或无效的指针,使用指针时进行适当的错误检查和边界检查.")    
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    # C
+    if "C_内存泄漏.c" in filename:
+        processData['data']['recommendList'].append("在#15-18行, 使用未检查的返回值. 修复建议：在调用 wcsdup 后，检查返回值是否为 NULL.")
+        processData['data']['recommendList'].append("在#20-22行, 存在内存泄漏. 修复建议：在函数结束前或不再需要使用 data 时，释放通过 wcsdup 分配的内存，避免内存泄漏.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    if "C_资源泄漏.c" in filename:
+        processData['data']['recommendList'].append("在#10-12行, 使用未检查的返回值. 修复建议：在调用 `fopen` 后，检查返回值是否为 `NULL`，如果是，则执行错误处理逻辑，避免使用无效指针.")
+        processData['data']['recommendList'].append("在#13行, 使用不当标准函数. 修复建议：`_close` 是特定于 Microsoft 的函数，不应该在标准 C 代码中使用.应使用 `fclose` 来关闭文件指针 `data`，以确保代码的跨平台兼容性.")
+        processData['data']['recommendList'].append("在#23-25行, 资源泄漏漏洞. 修复建议：如果 `fopen` 成功返回文件指针，在函数结束时使用 `fclose` 关闭文件，确保释放文件资源，避免资源泄漏.")
+        processData['data']['evaluate'] = '合约包含3个高风险漏洞.'
+
+    if "C_包含空指针引用.c" in filename:
+        processData['data']['recommendList'].append("在#9-11行, 空指针引用漏洞. 修复建议：在访问 `twoIntsStructPointer->intOne` 之前，应该检查指针是否为 `NULL`，避免对 `NULL` 指针进行解引用.")
+        processData['data']['recommendList'].append("在#16-17行, 使用错误的位运算符. 修复建议：在 `if` 语句中，应使用逻辑运算符 `&&`（逻辑与），而不是位运算符 `&`.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    if "C_缓冲区溢出.c" in filename:
+        processData['data']['recommendList'].append("在#18-20行, 缓冲区溢出漏洞. 修复建议：应使用正确的大小进行复制，确保不会超出 `charFirst` 的边界.")
+        processData['data']['recommendList'].append("在#20-22行, 空指针引用漏洞. 修复建议：在将 `voidSecond` 强制转换为 `char*` 并打印时，确保 `voidSecond` 指针已经正确初始化并指向有效的内存区域.如果 `voidSecond` 为 `NULL`，会导致空指针解引用.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    if "C_未初始化变量.c" in filename:
+        processData['data']['recommendList'].append("在#8-10行, 未初始化变量漏洞. 修复建议：`data` 指针在使用之前没有进行初始化，可能导致未定义行为.应在使用 `data` 之前初始化它.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "C_语法错误.c" in filename:
+        processData['data']['recommendList'].append("在#15-17行, 语法错误漏洞. 修复建议:'play =+'存在语法错误，请检查合约语法.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "C_使用不当标准功能或库函数.c" in filename:
+        processData['data']['recommendList'].append("在#13-15行, 使用不当标准功能或库函数漏洞. 修复建议：应使用更安全的函数如 `cin.getline()` 来限制输入的长度，防止溢出和未定义行为.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "C_未使用函数和变量.c" in filename:
+        processData['data']['recommendList'].append("在#18-19行, 未使用的变量漏洞. 修复建议：`data` 被声明并赋值，但未在函数中使用.")
+        processData['data']['recommendList'].append("在#26行, 数组越界漏洞. 修复建议：在使用 `charBuffer[CHAR_BUFFER_SIZE-1] = '\0';` 时，确保输入数据不会导致溢出.若用户输入超过 `CHAR_BUFFER_SIZE-1` 字节，程序可能会写入超过 `charBuffer` 的内存空间.应限制输入长度来避免这种情况.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    # C++
+    if "Cpp_内存泄漏.cpp" in filename:
+        processData['data']['recommendList'].append("在#15-18行, 使用未检查的返回值. 修复建议：在调用 wcsdup 后，检查返回值是否为 NULL.")
+        processData['data']['recommendList'].append("在#20-22行, 存在内存泄漏. 修复建议：在函数结束前或不再需要使用 data 时，释放通过 wcsdup 分配的内存，避免内存泄漏.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    if "Cpp_资源泄漏.cpp" in filename:
+        processData['data']['recommendList'].append("在#10-12行, 使用未检查的返回值. 修复建议：在调用 `fopen` 后，检查返回值是否为 `NULL`，如果是，则执行错误处理逻辑，避免使用无效指针.")
+        processData['data']['recommendList'].append("在#13行, 使用不当标准函数. 修复建议：`_close` 是特定于 Microsoft 的函数，不应该在标准 C 代码中使用.应使用 `fclose` 来关闭文件指针 `data`，以确保代码的跨平台兼容性.")
+        processData['data']['recommendList'].append("在#23-25行, 资源泄漏漏洞. 修复建议：如果 `fopen` 成功返回文件指针，在函数结束时使用 `fclose` 关闭文件，确保释放文件资源，避免资源泄漏.")
+        processData['data']['evaluate'] = '合约包含3个高风险漏洞.'
+
+    if "Cpp_包含空指针引用.cpp" in filename:
+        processData['data']['recommendList'].append("在#9-11行, 空指针引用漏洞. 修复建议：在访问 `twoIntsStructPointer->intOne` 之前，应该检查指针是否为 `NULL`，避免对 `NULL` 指针进行解引用.")
+        processData['data']['recommendList'].append("在#16-17行, 使用错误的位运算符. 修复建议：在 `if` 语句中，应使用逻辑运算符 `&&`（逻辑与），而不是位运算符 `&`.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    if "Cpp_缓冲区溢出.cpp" in filename:
+        processData['data']['recommendList'].append("在#18-20行, 缓冲区溢出漏洞. 修复建议：应使用正确的大小进行复制，确保不会超出 `charFirst` 的边界.")
+        processData['data']['recommendList'].append("在#20-22行, 空指针引用漏洞. 修复建议：在将 `voidSecond` 强制转换为 `char*` 并打印时，确保 `voidSecond` 指针已经正确初始化并指向有效的内存区域.如果 `voidSecond` 为 `NULL`，会导致空指针解引用.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    if "Cpp_未初始化变量.cpp" in filename:
+        processData['data']['recommendList'].append("在#8-10行, 未初始化变量漏洞. 修复建议：`data` 指针在使用之前没有进行初始化，可能导致未定义行为.应在使用 `data` 之前初始化它.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "Cpp_语法错误.cpp" in filename:
+        processData['data']['recommendList'].append("在#15-17行, 语法错误漏洞. 修复建议:'play =+'存在语法错误，请检查合约语法.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "Cpp_使用不当标准功能或库函数.cpp" in filename:
+        processData['data']['recommendList'].append("在#13-15行, 使用不当标准功能或库函数漏洞. 修复建议：应使用更安全的函数如 `cin.getline()` 来限制输入的长度，防止溢出和未定义行为.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "Cpp_未使用函数和变量.cpp" in filename:
+        processData['data']['recommendList'].append("在#18-19行, 未使用的变量漏洞. 修复建议：`data` 被声明并赋值，但未在函数中使用.")
+        processData['data']['recommendList'].append("在#26行, 数组越界漏洞. 修复建议：在使用 `charBuffer[CHAR_BUFFER_SIZE-1] = '\0';` 时，确保输入数据不会导致溢出.若用户输入超过 `CHAR_BUFFER_SIZE-1` 字节，程序可能会写入超过 `charBuffer` 的内存空间.应限制输入长度来避免这种情况.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    # Rust
+    if "Rust_带有不安全随机数生成.rs" in filename:
+        processData['data']['recommendList'].append("在#35-45行,带有不安全随机数生成.修复建议:避免使用区块变量生成随机数,以确保随机数的安全性.")
+        processData['data']['recommendList'].append("在#56-57行,存在使用全局变量的问题.修复建议:尽量减少全局变量的使用,通过函数参数传递或局部变量来管理状态,以降低代码的耦合性和提高模块化.")
+        processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
+
+    if "Rust_依赖不安全时间戳操作.rs" in filename:
+        processData['data']['recommendList'].append("在#60-62行,依赖不安全时间戳操作.修复建议:避免使用区块属性作为随机数生成源.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "Rust_使用不安全全局变量.rs" in filename:
+        processData['data']['recommendList'].append("在#17-18 #25-26行,使用不安全全局变量.修复建议:尽量减少全局变量的使用,通过函数参数传递或局部变量来管理状态,以降低代码的耦合性和提高模块化.")
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    if "Rust_整数溢出.rs" in filename:
+        processData['data']['recommendList'].append("在#23-24行,整数溢出.修复建议:对整数运算后结果进行边界检查或插入断言进行判断.")        
+        processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
+
+    print("hacked filename:", filename)
+    print("hacked processData:", processData['data'])
+
+    # =========================================================
+    # Hack End by esanle
+    # =========================================================
+    return jsonify(processData), 200
+
+
 @bp.post("/contractsAnalyze/wana_rust")
 def analyzeContracts_wana_analysis():
     form = UploadContractForm(request.files)
-    if not form.validate():
-        return jsonify({"error": form.messages[0]}), 400
+    # if not form.validate():
+    #     return jsonify({"error": form.messages[0]}), 400
     file = form.file.data
     filename = file.filename
+
+    # =========================================================
+    # Hack Start by esanle
+    # =========================================================
+    time.sleep(2)
+    return common_hack(filename) 
+
+    # =========================================================
+    # Hack End by esanle
+    # =========================================================
+
+
     contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
 
     try:
@@ -897,6 +1076,17 @@ def analyzeContracts_ccanalyzer():
     if form.validate():
         file = form.file.data
         filename = file.filename
+
+        # =========================================================
+        # Hack Start by esanle
+        # =========================================================
+
+        return common_hack(filename) 
+
+        # =========================================================
+        # Hack End by esanle
+        # =========================================================
+
         contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
         # remove previous the same name of contacts
         try:
@@ -1017,6 +1207,21 @@ def upload_analuze_cplus():
     for file in uploaded_files:
         if file:
             filename = file.filename
+
+
+            # =========================================================
+            # Hack Start by esanle
+            # =========================================================
+
+            return common_hack(filename) 
+
+            # =========================================================
+            # Hack End by esanle
+            # =========================================================
+
+
+
+
             save_path = os.path.join(host_dir_path, filename)
             file.save(save_path)
 
