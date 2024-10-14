@@ -25,15 +25,13 @@ until mysqladmin ping --silent; do
 done
 
 # Set root password and create database if not already done
-if [ ! -f /var/lib/mysql/.mysql_initialized ]; then
-    echo 'Setting root password and creating database...'
-    mysql -u root <<-EOSQL
-        ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '000000';
-        CREATE DATABASE IF NOT EXISTS sc_platform;
-        FLUSH PRIVILEGES;
+echo 'Setting root password and creating database...'
+mysql -u root <<-EOSQL
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '000000';
+    CREATE DATABASE IF NOT EXISTS sc_platform;
+    FLUSH PRIVILEGES;
 EOSQL
-    touch /var/lib/mysql/.mysql_initialized
-fi
+touch /var/lib/mysql/.mysql_initialized
 
 
 rm -rf migrations

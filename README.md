@@ -33,10 +33,12 @@ npm run build -- --mode development
 
 ## 外部用户访问 mysql
 
+容器登录
+
 mysql -u root -p
 
 例如 
 ```
 CREATE USER root@100.64.0.7 IDENTIFIED BY '000000'
-CREATE USER root@100.64.0.7 IDENTIFIED BY '000000'
+CREATE USER root@100.64.0.28 IDENTIFIED BY '000000'
 ```
