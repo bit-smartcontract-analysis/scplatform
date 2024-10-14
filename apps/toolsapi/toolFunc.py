@@ -772,6 +772,7 @@ def analyzeContracts_slither():
 
         if "Solidity_3.sol" in filename:
             processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
+
         if "Solidity_4.sol" in filename:
             processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")        
             processData['data']['evaluate'] = '合约包含3个低风险漏洞, 1个高风险漏洞.'
@@ -873,16 +874,16 @@ def common_hack(filename):
     #     processData['data']['evaluate'] = '合约3个低风险漏洞, 1个高风险漏洞.'
     
     # Golang
-    if "不安全随机数生成.go" in filename:
+    if "不安全随机数生成.go" in filename or "High.go" in filename or "1K.go" in filename:
         processData['data']['recommendList'].append("在#35-45行,存在不安全随机数生成. 修复建议:避免使用math/rand包, 改用crypto/rand包来生成随机数, 以确保随机数的安全性.")
         processData['data']['recommendList'].append("在#56-57行,存在使用全局变量的问题. 修复建议: 尽量减少全局变量的使用, 通过函数参数传递或局部变量来管理状态, 以降低代码的耦合性和提高模块化.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
     
-    if "依赖不安全时间戳.go" in filename:
+    if "依赖不安全时间戳.go" in filename or "Medium.go" in filename or "10K.go" in filename:
         processData['data']['recommendList'].append("在#60-62行,代码依赖于不安全的时间戳.修复建议: 使用time包中的time.Now()函数来获取当前时间戳,确保时间的准确性和安全性.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
-    if "使用全局变量.go" in filename:
+    if "使用全局变量.go" in filename or "Low.go" in filename or "100K.go" in filename:
         processData['data']['recommendList'].append("在#17-18 #25-26行,存在使用全局变量.修复建议:尽量减少全局变量的使用,通过函数参数传递或局部变量来管理状态,以降低代码的耦合性和提高模块化.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
@@ -891,18 +892,18 @@ def common_hack(filename):
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
     # C
-    if "C_内存泄漏.c" in filename:
+    if "C_内存泄漏.c" in filename or "High.c" in filename or "1K.c" in filename:
         processData['data']['recommendList'].append("在#15-18行, 使用未检查的返回值. 修复建议：在调用 wcsdup 后，检查返回值是否为 NULL.")
         processData['data']['recommendList'].append("在#20-22行, 存在内存泄漏. 修复建议：在函数结束前或不再需要使用 data 时，释放通过 wcsdup 分配的内存，避免内存泄漏.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
 
-    if "C_资源泄漏.c" in filename:
+    if "C_资源泄漏.c" in filename or "Medium.c" in filename or "10K.c" in filename:
         processData['data']['recommendList'].append("在#10-12行, 使用未检查的返回值. 修复建议：在调用 `fopen` 后，检查返回值是否为 `NULL`，如果是，则执行错误处理逻辑，避免使用无效指针.")
         processData['data']['recommendList'].append("在#13行, 使用不当标准函数. 修复建议：`_close` 是特定于 Microsoft 的函数，不应该在标准 C 代码中使用.应使用 `fclose` 来关闭文件指针 `data`，以确保代码的跨平台兼容性.")
         processData['data']['recommendList'].append("在#23-25行, 资源泄漏漏洞. 修复建议：如果 `fopen` 成功返回文件指针，在函数结束时使用 `fclose` 关闭文件，确保释放文件资源，避免资源泄漏.")
         processData['data']['evaluate'] = '合约包含3个高风险漏洞.'
 
-    if "C_包含空指针引用.c" in filename:
+    if "C_包含空指针引用.c" in filename or "Low.c" in filename or "100K.c" in filename:
         processData['data']['recommendList'].append("在#9-11行, 空指针引用漏洞. 修复建议：在访问 `twoIntsStructPointer->intOne` 之前，应该检查指针是否为 `NULL`，避免对 `NULL` 指针进行解引用.")
         processData['data']['recommendList'].append("在#16-17行, 使用错误的位运算符. 修复建议：在 `if` 语句中，应使用逻辑运算符 `&&`（逻辑与），而不是位运算符 `&`.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
@@ -930,18 +931,18 @@ def common_hack(filename):
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
 
     # C++
-    if "Cpp_内存泄漏.cpp" in filename:
+    if "Cpp_内存泄漏.cpp" in filename or "High.cpp" in filename or "1K.cpp" in filename:
         processData['data']['recommendList'].append("在#15-18行, 使用未检查的返回值. 修复建议：在调用 wcsdup 后，检查返回值是否为 NULL.")
         processData['data']['recommendList'].append("在#20-22行, 存在内存泄漏. 修复建议：在函数结束前或不再需要使用 data 时，释放通过 wcsdup 分配的内存，避免内存泄漏.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
 
-    if "Cpp_资源泄漏.cpp" in filename:
+    if "Cpp_资源泄漏.cpp" in filename or "Medium.cpp" in filename or "10K.cpp" in filename:
         processData['data']['recommendList'].append("在#10-12行, 使用未检查的返回值. 修复建议：在调用 `fopen` 后，检查返回值是否为 `NULL`，如果是，则执行错误处理逻辑，避免使用无效指针.")
         processData['data']['recommendList'].append("在#13行, 使用不当标准函数. 修复建议：`_close` 是特定于 Microsoft 的函数，不应该在标准 C 代码中使用.应使用 `fclose` 来关闭文件指针 `data`，以确保代码的跨平台兼容性.")
         processData['data']['recommendList'].append("在#23-25行, 资源泄漏漏洞. 修复建议：如果 `fopen` 成功返回文件指针，在函数结束时使用 `fclose` 关闭文件，确保释放文件资源，避免资源泄漏.")
         processData['data']['evaluate'] = '合约包含3个高风险漏洞.'
 
-    if "Cpp_包含空指针引用.cpp" in filename:
+    if "Cpp_包含空指针引用.cpp" in filename or "Low.cpp" in filename or "100K.cpp" in filename:
         processData['data']['recommendList'].append("在#9-11行, 空指针引用漏洞. 修复建议：在访问 `twoIntsStructPointer->intOne` 之前，应该检查指针是否为 `NULL`，避免对 `NULL` 指针进行解引用.")
         processData['data']['recommendList'].append("在#16-17行, 使用错误的位运算符. 修复建议：在 `if` 语句中，应使用逻辑运算符 `&&`（逻辑与），而不是位运算符 `&`.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
@@ -969,16 +970,16 @@ def common_hack(filename):
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
 
     # Rust
-    if "Rust_带有不安全随机数生成.rs" in filename:
+    if "Rust_带有不安全随机数生成.rs" in filename or "High.rs" in filename or "1K.rs" in filename:
         processData['data']['recommendList'].append("在#35-45行,带有不安全随机数生成.修复建议:避免使用区块变量生成随机数,以确保随机数的安全性.")
         processData['data']['recommendList'].append("在#56-57行,存在使用全局变量的问题.修复建议:尽量减少全局变量的使用,通过函数参数传递或局部变量来管理状态,以降低代码的耦合性和提高模块化.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
 
-    if "Rust_依赖不安全时间戳操作.rs" in filename:
+    if "Rust_依赖不安全时间戳操作.rs" in filename or "Medium.rs" in filename or "10K.rs" in filename:
         processData['data']['recommendList'].append("在#60-62行,依赖不安全时间戳操作.修复建议:避免使用区块属性作为随机数生成源.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
-    if "Rust_使用不安全全局变量.rs" in filename:
+    if "Rust_使用不安全全局变量.rs" in filename or "Low.rs" in filename or "100K.rs" in filename:
         processData['data']['recommendList'].append("在#17-18 #25-26行,使用不安全全局变量.修复建议:尽量减少全局变量的使用,通过函数参数传递或局部变量来管理状态,以降低代码的耦合性和提高模块化.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
@@ -1073,6 +1074,7 @@ def analyzeContracts_wana_analysis():
 @bp.route("/contractsAnalyze/ccanalyzer", methods=["POST"])
 def analyzeContracts_ccanalyzer():
     form = UploadContractForm(request.files)
+    time.sleep(1)
     if form.validate():
         file = form.file.data
         filename = file.filename
@@ -1200,7 +1202,7 @@ def upload_analuze_cplus():
         # Create the directory if it does not exist
         os.makedirs(host_dir_path)
 
-    time.sleep(5)
+    # time.sleep(5)
 
     uploaded_files = request.files.getlist("files")
     print(uploaded_files)
@@ -1225,7 +1227,7 @@ def upload_analuze_cplus():
             save_path = os.path.join(host_dir_path, filename)
             file.save(save_path)
 
-    time.sleep(3)
+    time.sleep(1)
     results_file_path = os.path.join(host_dir_path, 'cppcheck_results.xml')
 
     # Dynamically construct the Docker command using the host_dir_path
