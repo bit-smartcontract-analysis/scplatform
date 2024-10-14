@@ -28,3 +28,15 @@ https://cli.vuejs.org/zh/config/
 
 生成flask使用文件
 npm run build -- --mode development
+
+# Troubleshooting
+
+## 外部用户访问 mysql
+
+mysql -u root -p
+
+例如 
+```
+CREATE USER root@100.64.0.7 IDENTIFIED BY '000000'
+CREATE USER root@100.64.0.7 IDENTIFIED BY '000000'
+```
