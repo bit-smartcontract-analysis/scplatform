@@ -1,6 +1,7 @@
 services:
   sc-platform:
     build: .
+    platform: linux/x86_64
     privileged: true
     container_name: sc-platform
     environment:
@@ -17,5 +18,6 @@ services:
         hard: "65536"
     volumes:
       # only for developement
-      - /root/.ssh:/root/.ssh
-      - /root/.gitconfig:/root/.gitconfig
+      # - /root/.ssh:/root/.ssh
+      # - /root/.gitconfig:/root/.gitconfig
+      - ./root/sc-platform

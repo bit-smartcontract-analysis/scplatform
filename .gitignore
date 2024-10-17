@@ -67,3 +67,4 @@ pnpm-debug.log*
 *.sln
 *.sw?
 
+.DS_Store
