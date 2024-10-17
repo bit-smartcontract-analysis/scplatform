@@ -2,6 +2,7 @@
 
 service docker start
 service ssh start
+service mysql stop
 
 # Initialize MySQL data directory if it doesn't exist
 if [ ! -d "/var/lib/mysql/mysql" ]; then
@@ -10,8 +11,13 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo 'Database initialized.'
 fi
 
+# 暴露 3306
+sudo sed -i.bak 's/^bind-address.*/bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+sudo sed -i.bak 's/^mysqlx-bind-address.*/mysqlx-bind-address = 0.0.0.0/' /etc/mysql/mysql.conf.d/mysqld.cnf
+
 echo 'Starting MySQL server...'
-mysqld_safe &
+mysqld_safe --skip-grant-tables --skip-networking &
+# service mysql restart
 
 # Wait for MySQL to start
 echo 'Waiting for MySQL to start...'
@@ -20,16 +26,15 @@ until mysqladmin ping --silent; do
 done
 
 # Set root password and create database if not already done
-if [ ! -f /var/lib/mysql/.mysql_initialized ]; then
-    echo 'Setting root password and creating database...'
-    mysql -u root <<-EOSQL
-        ALTER USER 'root'@'localhost' IDENTIFIED BY '000000';
-        CREATE DATABASE IF NOT EXISTS sc_platform;
-        FLUSH PRIVILEGES;
+echo 'Setting root password and creating database...'
+mysql -u root <<-EOSQL
+    FLUSH PRIVILEGES;
+    ALTER USER 'root'@'localhost' IDENTIFIED BY '000000';
+    CREATE DATABASE IF NOT EXISTS sc_platform;
+    UPDATE mysql.user SET authentication_string = PASSWORD('000000') WHERE User = 'root' AND Host = 'localhost';
 EOSQL
-    touch /var/lib/mysql/.mysql_initialized
-fi
-
+touch /var/lib/mysql/.mysql_initialized
+service mysql restart
 
 rm -rf migrations
 python3 -m flask db init >> /tmp/flask-db.log 

@@ -1,6 +1,7 @@
 services:
   sc-platform:
     build: .
+    platform: linux/x86_64
     privileged: true
     container_name: sc-platform
     environment:
@@ -10,11 +11,13 @@ services:
       - "5000:5000"
       - "2222:22"
       - "8080:8080"
+      - "3306:3306"
     ulimits:
       nofile:
         soft: "65536"
         hard: "65536"
     volumes:
       # only for developement
-      - /root/.ssh:/root/.ssh
-      - /root/.gitconfig:/root/.gitconfig
+      # - /root/.ssh:/root/.ssh
+      # - /root/.gitconfig:/root/.gitconfig
+      - ./root/sc-platform
