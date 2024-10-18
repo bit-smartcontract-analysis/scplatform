@@ -20,4 +20,4 @@ services:
       # only for developement
       # - /root/.ssh:/root/.ssh
       # - /root/.gitconfig:/root/.gitconfig
-      - ./root/sc-platform
+      - ./:/root/sc-platform
