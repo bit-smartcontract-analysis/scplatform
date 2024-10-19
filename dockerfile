@@ -58,6 +58,21 @@ RUN apt-get install -y mysql-server
 # Install Redis 
 RUN apt install -y redis-server
 
+# Install Golang
+ENV GO_VERSION=1.21.1
+ENV GOPATH=/go
+ENV GOROOT=/usr/local/go
+ENV PATH=$PATH:$GOROOT/bin:$GOPATH/bin
+RUN apt-get update && apt-get install -y curl \
+    && curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/golang/go$GO_VERSION.linux-amd64.tar.gz -o go$GO_VERSION.linux-amd64.tar.gz \
+    && tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz \
+    && rm go$GO_VERSION.linux-amd64.tar.gz \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+RUN mkdir -p $GOPATH/src $GOPATH/bin
+WORKDIR /go/src
+ENV GOPROXY=https://goproxy.cn,direct
+
 # Verify installations
 RUN node -v
 RUN npm -v 
@@ -75,9 +90,6 @@ RUN cnpm i
 
 # Install Docker inside a docker
 RUN bash ./script/inst-docker-ubuntu.sh 
-
-# Install Go lang
-RUN bash ./script/load-goenv.sh
 
 # Install https://github.com/hyperledger-labs/chaincode-analyzer
 # Mirror https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git
