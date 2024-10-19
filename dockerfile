@@ -76,6 +76,10 @@ RUN cnpm i
 # Install Docker inside a docker
 RUN bash ./script/inst-docker-ubuntu.sh 
 
+# Install Go lang
+RUN bash ./script/load-goenv.sh
+
+
 # Create SSH directory and set up necessary files
 RUN apt-get update && apt-get install -y openssh-server
 RUN mkdir /var/run/sshd
