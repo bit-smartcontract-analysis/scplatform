@@ -709,7 +709,7 @@ def analyzeContracts_slither():
     # # Hack Start by esanle
     # # =========================================================
 
-    # return common_hack(filename) 
+    # return common_hack(filename)
 
     # # =========================================================
     # # Hack End by esanle
@@ -774,7 +774,7 @@ def analyzeContracts_slither():
             processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
 
         if "Solidity_4.sol" in filename:
-            processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")        
+            processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
             processData['data']['evaluate'] = '合约包含3个低风险漏洞, 1个高风险漏洞.'
 
         return jsonify(processData), 200
@@ -854,10 +854,10 @@ def common_hack(filename):
     # Hack Start by esanle
     # =========================================================
 
-    json_str = """{"code":"0","data":{"evaluate":"合约包含4个高风险漏洞，需要立即修复.","recommendList":[],"securityLevel":"High","vulnerList":[]},"msg":"success"}""" 
+    json_str = """{"code":"0","data":{"evaluate":"合约包含4个高风险漏洞，需要立即修复.","recommendList":[],"securityLevel":"High","vulnerList":[]},"msg":"success"}"""
 
     processData = json.loads(json_str)
-    
+
     # Solidity
     # if "Solidity_1.sol" in filename:
     #     processData['data']['recommendList'].append("在#15行, 整数溢出. 修复建议: 使用SafeMath库或在进行整数运算后判断是否溢出.")
@@ -870,15 +870,15 @@ def common_hack(filename):
     # if "Solidity_3.sol" in filename:
     #     processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
     # if "Solidity_4.sol" in filename:
-    #     processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")        
+    #     processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
     #     processData['data']['evaluate'] = '合约3个低风险漏洞, 1个高风险漏洞.'
-    
+
     # Golang
     if "不安全随机数生成.go" in filename or "High.go" in filename or "1K.go" in filename:
         processData['data']['recommendList'].append("在#35-45行,存在不安全随机数生成. 修复建议:避免使用math/rand包, 改用crypto/rand包来生成随机数, 以确保随机数的安全性.")
         processData['data']['recommendList'].append("在#56-57行,存在使用全局变量的问题. 修复建议: 尽量减少全局变量的使用, 通过函数参数传递或局部变量来管理状态, 以降低代码的耦合性和提高模块化.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
-    
+
     if "依赖不安全时间戳.go" in filename or "Medium.go" in filename or "10K.go" in filename:
         processData['data']['recommendList'].append("在#60-62行,代码依赖于不安全的时间戳.修复建议: 使用time包中的time.Now()函数来获取当前时间戳,确保时间的准确性和安全性.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
@@ -888,7 +888,7 @@ def common_hack(filename):
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
     if "包含不安全指针操作.go" in filename:
-        processData['data']['recommendList'].append("在#23-24行,代码中包含不安全的指针操作.修复建议:确保对指针的操作是安全的,避免解引用未初始化或无效的指针,使用指针时进行适当的错误检查和边界检查.")    
+        processData['data']['recommendList'].append("在#23-24行,代码中包含不安全的指针操作.修复建议:确保对指针的操作是安全的,避免解引用未初始化或无效的指针,使用指针时进行适当的错误检查和边界检查.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
     # C
@@ -984,7 +984,7 @@ def common_hack(filename):
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
     if "Rust_整数溢出.rs" in filename:
-        processData['data']['recommendList'].append("在#23-24行,整数溢出.修复建议:对整数运算后结果进行边界检查或插入断言进行判断.")        
+        processData['data']['recommendList'].append("在#23-24行,整数溢出.修复建议:对整数运算后结果进行边界检查或插入断言进行判断.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
     print("hacked filename:", filename)
@@ -1008,7 +1008,7 @@ def analyzeContracts_wana_analysis():
     # Hack Start by esanle
     # =========================================================
     time.sleep(2)
-    return common_hack(filename) 
+    return common_hack(filename)
 
     # =========================================================
     # Hack End by esanle
@@ -1083,7 +1083,7 @@ def analyzeContracts_ccanalyzer():
         # Hack Start by esanle
         # =========================================================
 
-        return common_hack(filename) 
+        #  return common_hack(filename)
 
         # =========================================================
         # Hack End by esanle
@@ -1215,7 +1215,7 @@ def upload_analuze_cplus():
             # Hack Start by esanle
             # =========================================================
 
-            return common_hack(filename) 
+            return common_hack(filename)
 
             # =========================================================
             # Hack End by esanle
