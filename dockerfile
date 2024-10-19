@@ -64,7 +64,7 @@ ENV GOPATH=/go
 ENV GOROOT=/usr/local/go
 ENV PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 RUN apt-get update && apt-get install -y curl \
-    && curl -fsSL https://mirrors.tuna.tsinghua.edu.cn/golang/go$GO_VERSION.linux-amd64.tar.gz -o go$GO_VERSION.linux-amd64.tar.gz \
+    && curl -fsSL https://mirrors.ustc.edu.cn/golang/go$GO_VERSION.linux-amd64.tar.gz -o go$GO_VERSION.linux-amd64.tar.gz \
     && tar -C /usr/local -xzf go$GO_VERSION.linux-amd64.tar.gz \
     && rm go$GO_VERSION.linux-amd64.tar.gz \
     && apt-get clean \
