@@ -81,27 +81,31 @@ RUN python3 --version
 RUN pip3 --version
 RUN mysqld --version
 
-# Install deps
+# Install python deps
 WORKDIR /root/sc-platform
 COPY requirements.txt ./requirements.txt 
 RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+# Install node deps
 COPY package.json ./package.json 
 RUN cnpm i   
 
-# Other file
-COPY . ./ 
-
-# Install Docker inside a docker
-RUN bash ./script/inst-docker-ubuntu.sh 
-
 # Install https://github.com/hyperledger-labs/chaincode-analyzer
 # Mirror https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git
-WORKDIR /srv/chaincode/
+RUN mkdir -p /srv/chaincode/chaincode-analyzer
 WORKDIR git clone https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
-WORKDIR /srv/chaincode/chaincode-analyzer/chaincode-analyzer
+WORKDIR /srv/chaincode/chaincode-analyzer
 RUN go build ccanalyzer.go
 WORKDIR /root/sc-platform
+
+# Install Docker inside a docker
+RUN mkdir -p ./script
+COPY ./script/inst-docker-ubuntu.sh ./script/inst-docker-ubuntu.sh 
+RUN bash ./script/inst-docker-ubuntu.sh 
+
+# Other source file
+COPY . ./ 
 
 EXPOSE 5000 
 EXPOSE 8080 
