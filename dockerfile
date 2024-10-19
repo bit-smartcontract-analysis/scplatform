@@ -79,21 +79,15 @@ RUN bash ./script/inst-docker-ubuntu.sh
 # Install Go lang
 RUN bash ./script/load-goenv.sh
 
-
-# Create SSH directory and set up necessary files
-RUN apt-get update && apt-get install -y openssh-server
-RUN mkdir /var/run/sshd
-RUN echo 'root:yourpassword' | chpasswd
-RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-
-# git
-RUN apt install -y git netcat 
- 
-# zsh
-RUN bash ./script/init-ubuntu-host-with-ssh-zsh.sh
+# Install https://github.com/hyperledger-labs/chaincode-analyzer
+# Mirror https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git
+WORKDIR /srv/chaincode/
+WORKDIR git clone https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
+WORKDIR /srv/chaincode/chaincode-analyzer/chaincode-analyzer
+RUN go init
+WORKDIR /root/sc-platform
 
 EXPOSE 5000 
-EXPOSE 22
 EXPOSE 8080 
 EXPOSE 3306 
 
