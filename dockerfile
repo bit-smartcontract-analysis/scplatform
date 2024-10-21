@@ -91,13 +91,12 @@ RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
 COPY package.json ./package.json 
 RUN cnpm i   
 
-# Install https://github.com/hyperledger-labs/chaincode-analyzer
-# Mirror https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git
-# RUN mkdir -p /srv/chaincode/chaincode-analyzer
-# WORKDIR git clone https://gitee.com/esenle/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
-# WORKDIR /srv/chaincode/chaincode-analyzer
-# RUN ls -al
-# RUN go build ccanalyzer.go
+# Install https://github.com/hyperledger-labs/chaincode-analyzer with mirror
+RUN mkdir -p /srv/chaincode/chaincode-analyzer
+WORKDIR git clone https://gitee.com/esenle/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
+WORKDIR /srv/chaincode/chaincode-analyzer
+RUN ls -al
+RUN go build ccanalyzer.go
 WORKDIR /root/sc-platform
 
 # Install Docker inside a docker
