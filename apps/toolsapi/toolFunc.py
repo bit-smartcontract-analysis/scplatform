@@ -1014,6 +1014,7 @@ def analyzeContracts_wana_analysis():
 
 
     contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
+    os.makedirs(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], exist_ok=True)
 
     try:
         os.remove(contract_path)

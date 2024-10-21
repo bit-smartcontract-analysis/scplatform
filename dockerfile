@@ -106,6 +106,9 @@ RUN mkdir -p ./script
 COPY ./script/inst-docker-ubuntu.sh ./script/inst-docker-ubuntu.sh 
 RUN bash ./script/inst-docker-ubuntu.sh 
 
+# Init Folders
+RUN mkdir -p tmpContracts
+
 # Other source file
 COPY . ./ 
 
