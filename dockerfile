@@ -90,7 +90,7 @@ RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Install node deps
 COPY package.json ./package.json 
-RUN cnpm i   
+RUN cnpm i
 
 # Install https://github.com/hyperledger-labs/chaincode-analyzer with mirror
 RUN mkdir -p /srv/chaincode/chaincode-analyzer
