@@ -45,21 +45,4 @@ mod briza {
     }
 
 
-    #[cfg(test)]
-    mod tests {
-        /// Imports all the definitions from the outer scope so we can use them here.
-        use super::*;
-
-        /// Imports `ink_lang` so we can use `#[ink::test]`.
-        //use ink_lang as ink;
-
-        /// We test if the default constructor does its job.
-        #[ink::test]
-        fn default_works() {
-            // let mut test = Briza::new();
-            // let ans = test.cal();
-            // assert_eq!(ans, vec![[3;10];338]);
-        }
-
-    }
 }

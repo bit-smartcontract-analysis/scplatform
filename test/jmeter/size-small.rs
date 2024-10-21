@@ -21,45 +21,5 @@ mod briza {
         pub fn new(va: Vec<u64>, v: Vec<u64>) -> Self {
             Self { value: va, v2: v}
         }
-
-        /// A message that can be called on instantiated contracts.
-        /// This one flips the value of the stored `bool` from `true`
-        /// to `false` and vice versa.
-        #[ink(message)]
-        pub fn cal(&mut self) -> Vec<u64> {
-            let mut ans = Vec::<u64>::new();
-            let mut tmp = 0;
-            let length = self.value.len();
-            for i in 0..length{
-                let tmp1 = self.value.get(i).unwrap();
-                let tmp2 = self.v2.get(i).unwrap();
-                tmp = tmp1 + tmp2;
-                tmp /=2;
-                ans.push(tmp);
-            }
-            return ans;
-            //self.value = !self.value;
-        }
-
-
-    }
-
-
-    #[cfg(test)]
-    mod tests {
-        /// Imports all the definitions from the outer scope so we can use them here.
-        use super::*;
-
-        /// Imports `ink_lang` so we can use `#[ink::test]`.
-        //use ink_lang as ink;
-
-        /// We test if the default constructor does its job.
-        #[ink::test]
-        fn default_works() {
-            // let mut test = Briza::new();
-            // let ans = test.cal();
-            // assert_eq!(ans, vec![[3;10];338]);
-        }
-
     }
 }

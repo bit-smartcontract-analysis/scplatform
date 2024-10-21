@@ -94,7 +94,7 @@ RUN cnpm i
 # Install https://github.com/hyperledger-labs/chaincode-analyzer
 # Mirror https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git
 RUN mkdir -p /srv/chaincode/chaincode-analyzer
-WORKDIR git clone https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
+WORKDIR git clone https://gitee.com/esenle/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
 WORKDIR /srv/chaincode/chaincode-analyzer
 RUN ls -al
 RUN go build ccanalyzer.go

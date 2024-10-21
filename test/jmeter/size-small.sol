@@ -1,23 +1,16 @@
 /*
- * @source: https://github.com/sigp/solidity-security-blog
+ * @source: https://github.com/SmartContractSecurity/SWC-registry/blob/master/test_cases/unprotected_critical_functions/simple_suicide.sol
  * @author: -
- * @vulnerable_at_lines: 20
+ * @vulnerable_at_lines: 12,13
  */
 
- pragma solidity ^0.4.22;
+//added prgma version
+pragma solidity ^0.4.0;
 
- contract Phishable {
-    address public owner;
+contract SimpleSuicide {
+  // <yes> <report> unsafe_suicide
+  function sudicideAnyone() {
+    selfdestruct(msg.sender);
+  }
 
-    constructor (address _owner) {
-        owner = _owner;
-    }
-
-    function () public payable {} // collect ether
-
-    function withdrawAll(address _recipient) public {
-        // <yes> <report> tx_origin
-        require(tx.origin == owner);
-        _recipient.transfer(this.balance);
-    }
 }
