@@ -106,8 +106,9 @@ RUN mkdir -p ./script
 COPY ./script/inst-docker-ubuntu.sh ./script/inst-docker-ubuntu.sh 
 RUN bash ./script/inst-docker-ubuntu.sh 
 
-# Init Folders
-RUN mkdir -p tmpContracts
+# Pull docker images
+RUN docker pull smartbugs/slither:latest 
+RUN docker pull weiboot/wana:v0.2 
 
 # Other source file
 COPY . ./ 
