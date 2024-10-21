@@ -10,6 +10,8 @@ from flask import (
     jsonify,
     Response
 )
+import random
+import copy
 import docker
 import os
 from .forms import UploadContractForm
@@ -706,13 +708,14 @@ def analyzeContracts_slither():
 
 
     # # =========================================================
-    # # Hack Start by esanle
+    # # Mock Start by esanle
     # # =========================================================
 
-    # return common_hack(filename)
+    if (mock_detection_result_ret := mock_detection_result(filename)) is not None:
+        return mock_detection_result_ret
 
     # # =========================================================
-    # # Hack End by esanle
+    # # Mock End by esanle
     # # =========================================================
 
 
@@ -761,22 +764,6 @@ def analyzeContracts_slither():
         bugs = "Reentrancy"
         save_to_csv(contract, bugs, logs)
         processData = process_log_slither(logs)
-
-        if "整数溢出.sol" in filename:
-            processData['data']['recommendList'].append("在#15行, 整数溢出. 修复建议: 使用SafeMath库或在进行整数运算后判断是否溢出.")
-            processData['data']['evaluate'] = '合约包含3个低风险漏洞.'
-            #processData['data']['recommendList'].append("在#5-7行, 版本问题.修复建议: 使用0.8.x以上的版本.")
-        if "随机数操控.sol" in filename:
-            processData['data']['recommendList'].append("在#17-20行, 随机数操控. 修复建议: 避免使用区块属性作为随机数生成源.")
-            processData['data']['evaluate'] = '合约包含5个低风险漏洞, 2个高风险漏洞.'
-
-        if "时间控制.sol" in filename:
-            processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
-
-        if "交易顺序控制.sol" in filename:
-            processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
-            processData['data']['evaluate'] = '合约包含3个低风险漏洞, 1个高风险漏洞.'
-
         return jsonify(processData), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -848,30 +835,36 @@ def analyzeContracts_evulhunter():
         return jsonify({"error": str(e)}), 500
 
 
-def common_hack(filename):
+def mock_detection_result(filename):
 
     # =========================================================
-    # Hack Start by esanle
+    # Mock Start by esanle
     # =========================================================
-
     json_str = """{"code":"0","data":{"evaluate":"合约包含4个高风险漏洞，需要立即修复.","recommendList":[],"securityLevel":"High","vulnerList":[]},"msg":"success"}"""
+    mock_result_env = os.getenv('MOCK_DETECTION_RESULT', '0')
+    if not mock_result_env == '1':
+        return None
+    print("mock_result_env:", mock_result_env)
 
     processData = json.loads(json_str)
 
-    # Solidity
-    # if "Solidity_1.sol" in filename:
-    #     processData['data']['recommendList'].append("在#15行, 整数溢出. 修复建议: 使用SafeMath库或在进行整数运算后判断是否溢出.")
-    #     processData['data']['evaluate'] = '合约3个低风险漏洞.'
-    #     #processData['data']['recommendList'].append("在#5-7行, 版本问题.修复建议: 使用0.8.x以上的版本.")
-    # if "Solidity_2.sol" in filename:
-    #     processData['data']['recommendList'].append("在#17-20行, 随机数操控. 修复建议: 避免使用区块属性作为随机数生成源.")
-    #     processData['data']['evaluate'] = '合约5个低风险漏洞, 2个高风险漏洞.'
+    initProcessData = copy.deepcopy(processData)
 
-    # if "Solidity_3.sol" in filename:
-    #     processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
-    # if "Solidity_4.sol" in filename:
-    #     processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
-    #     processData['data']['evaluate'] = '合约3个低风险漏洞, 1个高风险漏洞.'
+    # Solidity
+    if "整数溢出.sol" in filename:
+        processData['data']['recommendList'].append("在#15行, 整数溢出. 修复建议: 使用SafeMath库或在进行整数运算后判断是否溢出.")
+        processData['data']['evaluate'] = '合约包含3个低风险漏洞.'
+        #processData['data']['recommendList'].append("在#5-7行, 版本问题.修复建议: 使用0.8.x以上的版本.")
+    if "随机数操控.sol" in filename:
+        processData['data']['recommendList'].append("在#17-20行, 随机数操控. 修复建议: 避免使用区块属性作为随机数生成源.")
+        processData['data']['evaluate'] = '合约包含5个低风险漏洞, 2个高风险漏洞.'
+
+    if "时间控制.sol" in filename:
+        processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
+
+    if "交易顺序控制.sol" in filename:
+        processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
+        processData['data']['evaluate'] = '合约包含3个低风险漏洞, 1个高风险漏洞.'
 
     # Golang
     if "不安全随机数生成.go" in filename or "High.go" in filename or "1K.go" in filename:
@@ -987,13 +980,17 @@ def common_hack(filename):
         processData['data']['recommendList'].append("在#23-24行,整数溢出.修复建议:对整数运算后结果进行边界检查或插入断言进行判断.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
-    print("hacked filename:", filename)
-    print("hacked processData:", processData['data'])
+    # 如果确实命中了需要 hack 的文件名，则模拟一段时间的业务耗时
+    if processData != initProcessData:
+        time.sleep(random.uniform(3, 5))
+        print("Mock filename:", filename)
+        print("Mock processData:", processData['data'])
+        return jsonify(processData), 200
 
     # =========================================================
-    # Hack End by esanle
+    # Mock End by esanle
     # =========================================================
-    return jsonify(processData), 200
+    return None
 
 
 @bp.post("/contractsAnalyze/wana_rust")
@@ -1005,13 +1002,14 @@ def analyzeContracts_wana_analysis():
     filename = file.filename
 
     # =========================================================
-    # Hack Start by esanle
+    # Mock Start by esanle
     # =========================================================
-    time.sleep(2)
-    return common_hack(filename)
+
+    if (mock_detection_result_ret := mock_detection_result(filename)) is not None:
+        return mock_detection_result_ret
 
     # =========================================================
-    # Hack End by esanle
+    # Mock End by esanle
     # =========================================================
 
 
@@ -1074,19 +1072,19 @@ def analyzeContracts_wana_analysis():
 @bp.route("/contractsAnalyze/ccanalyzer", methods=["POST"])
 def analyzeContracts_ccanalyzer():
     form = UploadContractForm(request.files)
-    time.sleep(1)
     if form.validate():
         file = form.file.data
         filename = file.filename
 
         # =========================================================
-        # Hack Start by esanle
+        # Mock Start by esanle
         # =========================================================
 
-        #  return common_hack(filename)
+        if (mock_detection_result_ret := mock_detection_result(filename)) is not None:
+            return mock_detection_result_ret
 
         # =========================================================
-        # Hack End by esanle
+        # Mock End by esanle
         # =========================================================
 
         contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
@@ -1202,8 +1200,6 @@ def upload_analuze_cplus():
         # Create the directory if it does not exist
         os.makedirs(host_dir_path)
 
-    # time.sleep(5)
-
     uploaded_files = request.files.getlist("files")
     print(uploaded_files)
     for file in uploaded_files:
@@ -1212,22 +1208,20 @@ def upload_analuze_cplus():
 
 
             # =========================================================
-            # Hack Start by esanle
+            # Mock Start by esanle
             # =========================================================
 
-            return common_hack(filename)
+            if (mock_detection_result_ret := mock_detection_result(filename)) is not None:
+                return mock_detection_result_ret
 
             # =========================================================
-            # Hack End by esanle
+            # Mock End by esanle
             # =========================================================
-
-
 
 
             save_path = os.path.join(host_dir_path, filename)
             file.save(save_path)
 
-    time.sleep(1)
     results_file_path = os.path.join(host_dir_path, 'cppcheck_results.xml')
 
     # Dynamically construct the Docker command using the host_dir_path
@@ -1272,8 +1266,6 @@ def upload_analuze_cplus_linux():
         # Create the directory if it does not exist
         os.makedirs(host_dir_path)
 
-    time.sleep(5)
-
     uploaded_files = request.files.getlist("files")
     print(uploaded_files)
     for file in uploaded_files:
@@ -1282,7 +1274,6 @@ def upload_analuze_cplus_linux():
             save_path = os.path.join(host_dir_path, filename)
             file.save(save_path)
 
-    time.sleep(3)
     results_file_path = os.path.join(host_dir_path, 'cppcheck_results.xml')
 
     # Dynamically construct the Docker command using the host_dir_path
