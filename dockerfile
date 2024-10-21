@@ -94,9 +94,10 @@ RUN cnpm i
 
 # Install https://github.com/hyperledger-labs/chaincode-analyzer with mirror
 RUN mkdir -p /srv/chaincode/chaincode-analyzer
-RUN git clone https://gitee.com/esenle/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
+RUN git clone https://gitee.com/mirrors_hyperledger-labs/chaincode-analyzer.git /srv/chaincode/chaincode-analyzer/
 WORKDIR /srv/chaincode/chaincode-analyzer
 RUN ls -al
+RUN go mod init github.com/hyperledger-labs/chaincode-analyzer
 RUN go build ccanalyzer.go
 WORKDIR /root/sc-platform
 
