@@ -26,7 +26,8 @@ RUN apt-get install -y \
     curl \
     ca-certificates \
     net-tools \
-    sudo
+    sudo \
+    git
 
 # Install python
 ARG PYTHON_VERSION=3.11.0
