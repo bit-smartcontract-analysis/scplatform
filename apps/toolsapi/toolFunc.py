@@ -762,18 +762,18 @@ def analyzeContracts_slither():
         save_to_csv(contract, bugs, logs)
         processData = process_log_slither(logs)
 
-        if "Solidity_1.sol" in filename:
+        if "整数溢出.sol" in filename:
             processData['data']['recommendList'].append("在#15行, 整数溢出. 修复建议: 使用SafeMath库或在进行整数运算后判断是否溢出.")
             processData['data']['evaluate'] = '合约包含3个低风险漏洞.'
             #processData['data']['recommendList'].append("在#5-7行, 版本问题.修复建议: 使用0.8.x以上的版本.")
-        if "Solidity_2.sol" in filename:
+        if "随机数操控.sol" in filename:
             processData['data']['recommendList'].append("在#17-20行, 随机数操控. 修复建议: 避免使用区块属性作为随机数生成源.")
             processData['data']['evaluate'] = '合约包含5个低风险漏洞, 2个高风险漏洞.'
 
-        if "Solidity_3.sol" in filename:
+        if "时间控制.sol" in filename:
             processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
 
-        if "Solidity_4.sol" in filename:
+        if "交易顺序控制.sol" in filename:
             processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
             processData['data']['evaluate'] = '合约包含3个低风险漏洞, 1个高风险漏洞.'
 
