@@ -1012,8 +1012,9 @@ def analyzeContracts_wana_analysis():
     # Mock End by esanle
     # =========================================================
 
-    contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
-    os.makedirs(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], exist_ok=True)
+    contract = filename
+    contract_path = os.path.join('/data/media/tmpContracts/', filename)
+    os.makedirs(os.path.dirname(contract_path), exist_ok=True)
 
     try:
         os.remove(contract_path)
@@ -1024,12 +1025,10 @@ def analyzeContracts_wana_analysis():
 
     # analyze contracts
     client = docker.from_env()
-    contract = filename
     if not contract:
         return jsonify({"error": "Contract not specified"}), 400
     try:
         host_path = project_root_path
-        contract_path = f"/data/media/tmpContracts/{contract}"
         image_name = "weiboot/wana:v1.0"
         image = None
 

@@ -1,5 +1,5 @@
 # Use Ubuntu 20.04 as the base image
-FROM ubuntu:20.04
+FROM ubuntu:20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e45a81e0ef
 
 # Set non-interactive mode for apt to avoid prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
@@ -104,11 +104,7 @@ WORKDIR /root/sc-platform
 # Install Docker inside a docker
 RUN mkdir -p ./script
 COPY ./script/inst-docker-ubuntu.sh ./script/inst-docker-ubuntu.sh 
-RUN bash ./script/inst-docker-ubuntu.sh 
-
-# Pull docker images
-RUN docker pull smartbugs/slither:latest 
-RUN docker pull weiboot/wana:v0.2 
+RUN bash ./script/inst-docker-ubuntu.sh
 
 # Other source file
 COPY . ./ 

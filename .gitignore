@@ -69,4 +69,7 @@ pnpm-debug.log*
 
 .DS_Store
 
+# Biz
 /migrations
+/media
+.*.log

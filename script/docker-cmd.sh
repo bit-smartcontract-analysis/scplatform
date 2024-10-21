@@ -1,10 +1,13 @@
 #!/bin/bash
 
+# Pull docker image for detection 
 service docker start
-service ssh start
-service mysql stop
+sleep 5
+nohup bash -c 'docker pull smartbugs/slither:latest >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
+nohup bash -c 'docker pull weiboot/wana:v1.0 >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
 
 # Initialize MySQL data directory if it doesn't exist
+service mysql stopkk
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo 'Initializing database...'
     mysqld --initialize-insecure --user=mysql
@@ -29,9 +32,8 @@ done
 echo 'Setting root password and creating database...'
 mysql -u root <<-EOSQL
     FLUSH PRIVILEGES;
-    ALTER USER 'root'@'localhost' IDENTIFIED BY '000000';
+    ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '000000';
     CREATE DATABASE IF NOT EXISTS sc_platform;
-    UPDATE mysql.user SET authentication_string = PASSWORD('000000') WHERE User = 'root' AND Host = 'localhost';
 EOSQL
 touch /var/lib/mysql/.mysql_initialized
 service mysql restart
