@@ -963,12 +963,12 @@ def mock_detection_result(filename):
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
 
     # Rust
-    if "Rust_带有不安全随机数生成.rs" in filename:
+    if "Rust_带有不安全随机数生成.rs" in filename or "complexity-high.rs" in filename or "complexity-low.rs" in filename or "complexity-medium.rs" in filename:
         processData['data']['recommendList'].append("在#35-45行,带有不安全随机数生成.修复建议:避免使用区块变量生成随机数,以确保随机数的安全性.")
         processData['data']['recommendList'].append("在#56-57行,存在使用全局变量的问题.修复建议:尽量减少全局变量的使用,通过函数参数传递或局部变量来管理状态,以降低代码的耦合性和提高模块化.")
         processData['data']['evaluate'] = '合约包含2个高风险漏洞.'
 
-    if "Rust_依赖不安全时间戳操作.rs" in filename:
+    if "Rust_依赖不安全时间戳操作.rs" in filename or "size-large.rs" in filename or "size-small.rs" in filename or "size-medium.rs" in filename:
         processData['data']['recommendList'].append("在#60-62行,依赖不安全时间戳操作.修复建议:避免使用区块属性作为随机数生成源.")
         processData['data']['evaluate'] = '合约包含1个高风险漏洞.'
 
