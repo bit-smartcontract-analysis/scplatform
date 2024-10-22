@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="漏洞检测并发测试Solidity" enabled="true">
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="漏洞检测并发测试Cpp" enabled="true">
       <stringProp name="TestPlan.comments"></stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
@@ -12,7 +12,7 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="漏洞检测并发测试Solidity">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="漏洞检测并发测试Cpp">
         <intProp name="ThreadGroup.num_threads">3</intProp>
         <intProp name="ThreadGroup.ramp_time">1</intProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
@@ -23,20 +23,20 @@
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Solidity高复杂度" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Cpp高复杂度" enabled="true">
           <stringProp name="HTTPSampler.domain">192.168.21.94</stringProp>
           <stringProp name="HTTPSampler.port">5000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/slither</stringProp>
+          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/upload_cc</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="complexity-high.sol" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">application/octet-stream</stringProp>
-                <stringProp name="File.path">complexity-high.sol</stringProp>
+              <elementProp name="complexity-high.cpp" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/x-c++src</stringProp>
+                <stringProp name="File.path">complexity-high.cpp</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
@@ -57,20 +57,20 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Solidity中复杂度" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Cpp中复杂度" enabled="true">
           <stringProp name="HTTPSampler.domain">192.168.21.94</stringProp>
           <stringProp name="HTTPSampler.port">5000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/slither</stringProp>
+          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/upload_cc</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="complexity-medium.sol" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">application/octet-stream</stringProp>
-                <stringProp name="File.path">complexity-medium.sol</stringProp>
+              <elementProp name="complexity-medium.cpp" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/x-c++src</stringProp>
+                <stringProp name="File.path">complexity-medium.cpp</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
@@ -91,20 +91,20 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Solidity低复杂度" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Cpp低复杂度" enabled="true">
           <stringProp name="HTTPSampler.domain">192.168.21.94</stringProp>
           <stringProp name="HTTPSampler.port">5000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/slither</stringProp>
+          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/upload_cc</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="complexity-low.sol" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">application/octet-stream</stringProp>
-                <stringProp name="File.path">complexity-low.sol</stringProp>
+              <elementProp name="complexity-low.cpp" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/x-c++src</stringProp>
+                <stringProp name="File.path">complexity-low.cpp</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
@@ -125,20 +125,20 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Solidity-size-small" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Cpp-size-small" enabled="true">
           <stringProp name="HTTPSampler.domain">192.168.21.94</stringProp>
           <stringProp name="HTTPSampler.port">5000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/slither</stringProp>
+          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/upload_cc</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="size-small.sol" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">application/octet-stream</stringProp>
-                <stringProp name="File.path">size-small.sol</stringProp>
+              <elementProp name="size-small.cpp" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/x-c++src</stringProp>
+                <stringProp name="File.path">size-small.cpp</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
@@ -159,20 +159,20 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Solidity-size-medium" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Cpp-size-medium" enabled="true">
           <stringProp name="HTTPSampler.domain">192.168.21.94</stringProp>
           <stringProp name="HTTPSampler.port">5000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/slither</stringProp>
+          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/upload_cc</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="size-medium.sol" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">application/octet-stream</stringProp>
-                <stringProp name="File.path">size-medium.sol</stringProp>
+              <elementProp name="size-medium.cpp" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/x-c++src</stringProp>
+                <stringProp name="File.path">size-medium.cpp</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
@@ -193,20 +193,20 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Solidity-size-large" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Cpp-size-large" enabled="true">
           <stringProp name="HTTPSampler.domain">192.168.21.94</stringProp>
           <stringProp name="HTTPSampler.port">5000</stringProp>
           <stringProp name="HTTPSampler.protocol">http</stringProp>
-          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/slither</stringProp>
+          <stringProp name="HTTPSampler.path">/toolFunc/contractsAnalyze/upload_cc</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
           <boolProp name="HTTPSampler.DO_MULTIPART_POST">true</boolProp>
           <elementProp name="HTTPsampler.Files" elementType="HTTPFileArgs">
             <collectionProp name="HTTPFileArgs.files">
-              <elementProp name="size-large.sol" elementType="HTTPFileArg">
-                <stringProp name="File.mimetype">application/octet-stream</stringProp>
-                <stringProp name="File.path">size-large.sol</stringProp>
+              <elementProp name="size-large.cpp" elementType="HTTPFileArg">
+                <stringProp name="File.mimetype">text/x-c++src</stringProp>
+                <stringProp name="File.path">size-large.cpp</stringProp>
                 <stringProp name="File.paramname">file</stringProp>
               </elementProp>
             </collectionProp>
