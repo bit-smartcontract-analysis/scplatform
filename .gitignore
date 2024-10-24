@@ -72,3 +72,6 @@ pnpm-debug.log*
 # Biz
 /migrations
 .*.log
+
+# redis
+dump.rdb
