@@ -34,10 +34,10 @@ SC_analysis/.DS_Store
 gradle.properties
 **/__pycache__
 *.xml
-media/contracts/*.wasm
-media/contracts/*.sol
-media/tmpContracts/*.wasm
-media/tmpContracts/*.sol
+media/contracts
+media/contracts
+media/tmpContracts
+media/tmpContracts
 media/logs/*.csv
 
 # ==========================================
@@ -71,5 +71,4 @@ pnpm-debug.log*
 
 # Biz
 /migrations
-/media
 .*.log
