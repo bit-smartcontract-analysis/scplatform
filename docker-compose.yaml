@@ -10,7 +10,6 @@ services:
       - MOCK_DETECTION_RESULT=1
     ports:
       - "5000:5000"
-      - "2222:22"
       - "8080:8080"
       - "3306:3306"
     ulimits:
@@ -20,3 +19,11 @@ services:
     # volumes:
       # only for developement
       # - ./:/root/sc-platform
+  sc-platform-docker-image-registry:
+    container_name: sc-platform-docker-image-registry
+    image: registry:2
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./media/docker-image-registry:/var/lib/registry
+

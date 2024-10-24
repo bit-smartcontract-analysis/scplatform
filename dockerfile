@@ -27,7 +27,8 @@ RUN apt-get install -y \
     ca-certificates \
     net-tools \
     sudo \
-    git
+    git \
+    jq
 
 # Install python
 ARG PYTHON_VERSION=3.11.0
@@ -43,15 +44,15 @@ RUN python3 -m pip install -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simp
 RUN pip${PYTHON_VERSION%.*} config set global.index-url https://mirrors.aliyun.com/pypi/simple/
 
 # Install node lst 
-ARG NODE_VERSION=20.18.0
-RUN curl -fsSL https://npmmirror.com/mirrors/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -o node.tar.xz \
-    && tar -xJf node.tar.xz -C /usr/local --strip-components=1 \
-    && rm node.tar.xz
-RUN npm config set registry https://registry.npmmirror.com
+# ARG NODE_VERSION=20.18.0
+# RUN curl -fsSL https://npmmirror.com/mirrors/node/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -o node.tar.xz \
+    # && tar -xJf node.tar.xz -C /usr/local --strip-components=1 \
+    # && rm node.tar.xz
+# RUN npm config set registry https://registry.npmmirror.com
 
 # Install cnpm and yarn
-RUN npm install cnpm -g --registry=https://registry.npmmirror.com
-RUN npm install yarn -g --registry=https://registry.npmmirror.com
+# RUN npm install cnpm -g --registry=https://registry.npmmirror.com
+# RUN npm install yarn -g --registry=https://registry.npmmirror.com
 
 # Install MySQL Server
 RUN apt-get install -y mysql-server
@@ -75,9 +76,9 @@ WORKDIR /go/src
 ENV GOPROXY=https://goproxy.cn,direct
 
 # Verify installations
-RUN node -v
-RUN npm -v 
-RUN yarn -v 
+# RUN node -v
+# RUN npm -v 
+# RUN yarn -v 
 RUN python3 --version
 RUN pip3 --version
 RUN mysqld --version
@@ -89,8 +90,8 @@ RUN pip3 install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 RUN pip3 install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Install node deps
-COPY package.json ./package.json 
-RUN cnpm i
+# COPY package.json ./package.json 
+# RUN cnpm i
 
 # Install https://github.com/hyperledger-labs/chaincode-analyzer with mirror
 RUN mkdir -p /srv/chaincode/chaincode-analyzer
@@ -110,8 +111,9 @@ RUN bash ./script/inst-docker-ubuntu.sh
 COPY . ./ 
 
 EXPOSE 5000 
-EXPOSE 8080 
 EXPOSE 3306 
 
 # cmd
-CMD ["/bin/bash", "/root/sc-platform/script/docker-cmd.sh"]
+# 部分功能 dockerfile 中 RUN 会失败，需要在该脚本中执行
+# RUN bash /root/sc-platform/script/init-all.sh
+CMD ["/bin/bash", "/root/sc-platform/script/init-all.sh"]

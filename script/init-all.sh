@@ -1,10 +1,31 @@
 #!/bin/bash
 
+pull_image() {
+    image_name=$1
+
+    # Check if the image exists in the local registry
+    result=$(curl -s http://localhost:5001/v2/_catalog | jq -r ".repositories[]" | grep "^$image_name$")
+
+    if [ "$result" != "" ]; then
+        echo "Pulling image $image_name from localhost:5001..."
+        docker pull localhost:5001/$image_name
+    else
+        echo "Image $image_name not found in localhost:5001. Pulling from Docker Hub..."
+        docker pull $image_name
+    fi
+}
+
+# run main services
+nohup bash -c 'redis-server >> /tmp/redis.log 2>&1' >& /tmp/redis.log &
+nohup bash -c 'python3 app.py >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
+nohup bash -c 'celery -A app.mycelery worker --loglevel=info -P gevent >> /tmp/celery.log 2>&1' >& /tmp/celery.log &
+
 # Pull docker image for detection 
 service docker start
-sleep 5
-nohup bash -c 'docker pull smartbugs/slither:latest >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
-nohup bash -c 'docker pull weiboot/wana:v1.0 >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
+pull_image smartbugs/slither:latest &
+pull_image pull_image weiboot/wana:v1.0 &
+# nohup bash -c 'pull_image smartbugs/slither:latest >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
+# nohup bash -c 'pull_image weiboot/wana:v1.0 >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
 
 # Initialize MySQL data directory if it doesn't exist
 service mysql stopkk
@@ -43,12 +64,6 @@ python3 -m flask db init >> /tmp/flask-db.log
 python3 -m flask db migrate >> /tmp/flask-db.log 
 python3 -m flask db upgrade >> /tmp/flask-db.log 
 
-# nohup bash -c 'npm run start >> /tmp/node.log 2>&1' >& /tmp/node.log &
-nohup bash -c 'redis-server >> /tmp/redis.log 2>&1' >& /tmp/redis.log &
-nohup bash -c 'python3 app.py >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
-# nohup bash -c 'python3 -m flask run >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
-# nohup bash -c 'gunicorn -b :80 app >> /tmp/gunicorn.log' >& /tmp/gunicorn.log &
-nohup bash -c 'celery -A app.mycelery worker --loglevel=info -P gevent >> /tmp/celery.log 2>&1' >& /tmp/celery.log &
-nohup bash -c 'cnpm run serve >> /tmp/cnpm.log 2>&1' >& /tmp/cnpm.log &
+tail -f /tmp/*.log
 
-sleep infinity
+# sleep infinity
