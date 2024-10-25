@@ -9,6 +9,7 @@ pull_image() {
     if [ "$result" != "" ]; then
         echo "Pulling image $image_name from localhost:5001..."
         docker tag localhost:5001/$image_name $image_name 
+        docker push localhost:5001/$image_name $image_name 
     else
         echo "Image $image_name not found in localhost:5001. Pulling from Docker Hub..."
         docker pull $image_name
