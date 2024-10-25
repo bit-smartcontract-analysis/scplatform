@@ -24,8 +24,6 @@ nohup bash -c 'celery -A app.mycelery worker --loglevel=info -P gevent >> /tmp/c
 service docker start
 pull_image smartbugs/slither:latest &
 pull_image pull_image weiboot/wana:v1.0 &
-# nohup bash -c 'pull_image smartbugs/slither:latest >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
-# nohup bash -c 'pull_image weiboot/wana:v1.0 >> /tmp/docker-pull.log 2>&1' >& /tmp/docker-pull.log &
 
 # Initialize MySQL data directory if it doesn't exist
 service mysql stopkk
