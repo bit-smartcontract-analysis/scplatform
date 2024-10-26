@@ -9,11 +9,11 @@ pull_image() {
     if [ "$result" != "" ]; then
         echo "Pulling image $image_name from localhost:5001..."
         docker tag localhost:5001/$image_name $image_name 
-        docker push localhost:5001/$image_name $image_name 
     else
         echo "Image $image_name not found in localhost:5001. Pulling from Docker Hub..."
         docker pull $image_name
         docker tag $image_name localhost:5001/$image_name
+        docker push localhost:5001/$image_name 
     fi
 }
 
@@ -21,6 +21,21 @@ pull_image() {
 nohup bash -c 'redis-server >> /tmp/redis.log 2>&1' >& /tmp/redis.log &
 nohup bash -c 'python3 app.py >> /tmp/flask.log 2>&1' >& /tmp/flask.log &
 nohup bash -c 'celery -A app.mycelery worker --loglevel=info -P gevent >> /tmp/celery.log 2>&1' >& /tmp/celery.log &
+
+# start docker registry
+mkdir -p /etc/docker/registry
+tee /etc/docker/registry/config.yml > /dev/null <<EOF
+version: 0.1
+log:
+  fields:
+    service: registry
+storage:
+  filesystem:
+    rootdirectory: /var/lib/registry
+http:
+  addr: :5001
+EOF
+env REGISTRY_PORT=5001 docker-registry serve /etc/docker/registry/config.yml &
 
 # Pull docker image for detection 
 service docker start

@@ -28,7 +28,9 @@ RUN apt-get install -y \
     net-tools \
     sudo \
     git \
-    jq
+    jq \
+    docker.io \
+    docker-registry
 
 # Install python
 ARG PYTHON_VERSION=3.11.0
@@ -116,4 +118,4 @@ EXPOSE 3306
 # cmd
 # 部分功能 dockerfile 中 RUN 会失败，需要在该脚本中执行
 # RUN bash /root/sc-platform/script/init-all.sh
-CMD ["/bin/bash", "/root/sc-platform/script/init-all.sh"]
+CMD ["/bin/bash", "/root/sc-platform/script/start-dockerfile-deamon.sh"]

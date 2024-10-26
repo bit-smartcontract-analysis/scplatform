@@ -39,6 +39,7 @@ media/contracts
 media/tmpContracts
 media/tmpContracts
 media/logs/*.csv
+media/docker-image-registry
 
 # ==========================================
 # for node js 

@@ -19,11 +19,5 @@ services:
     # volumes:
       # only for developement
       # - ./:/root/sc-platform
-  sc-platform-docker-image-registry:
-    container_name: sc-platform-docker-image-registry
-    image: registry:2
-    ports:
-      - "5001:5000"
     volumes:
       - ./media/docker-image-registry:/var/lib/registry
-
