@@ -1,14 +1,18 @@
 # Overview for Front View of smart contract platform
 This project aims to provide different analysis tools for smart contracts on chainmaker [link](https://chainmaker.org.cn).
 
-# Development
+# Docker container for Development and Production
+
+All dependencies are installed to the docker container, there is no need to manually configure python3, mysql, redis, etc.
+
+## Development
 
 ```
 
 ```
 
 
-# Production
+## Production
 
 ```
 
