@@ -107,6 +107,7 @@ WORKDIR /root/sc-platform
 # Install Docker inside a docker
 RUN mkdir -p ./script
 COPY ./script/inst-docker-ubuntu.sh ./script/inst-docker-ubuntu.sh 
+RUN sed -i 's/\r$//' ./script/inst-docker-ubuntu.sh
 RUN bash ./script/inst-docker-ubuntu.sh
 
 # Other source file
@@ -118,4 +119,5 @@ EXPOSE 3306
 # cmd
 # 部分功能 dockerfile 中 RUN 会失败，需要在该脚本中执行
 # RUN bash /root/sc-platform/script/init-all.sh
+RUN sed -i 's/\r$//' "/root/sc-platform/script/start-dockerfile-deamon.sh"
 CMD ["/bin/bash", "/root/sc-platform/script/start-dockerfile-deamon.sh"]
