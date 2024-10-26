@@ -5,6 +5,31 @@ This project aims to provide different analysis tools for smart contracts on cha
 
 All dependencies are installed to the docker container, there is no need to manually configure python3, mysql, redis, etc.
 
+Its better to config china mirror for docker hub, which could always changed.
+
+```
+  "registry-mirrors": [
+    "https://docker.1panel.dev",
+    "https://docker.anyhub.us.kg",
+    "https://docker.m.daocloud.io",
+    "https://dockerproxy.com",
+    "https://docker.mirrors.ustc.edu.cn"
+  ]
+```
+
+Linux 
+
+```
+
+```
+
+Windows
+
+```
+
+```
+
+
 ## Development
 
 ```
@@ -13,6 +38,13 @@ All dependencies are installed to the docker container, there is no need to manu
 
 
 ## Production
+
+Windows
+```
+.\script\start-sc-platform-docker-container.cmd
+```
+
+Linux
 
 ```
 
