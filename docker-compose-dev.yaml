@@ -5,7 +5,7 @@ services:
     privileged: true
     container_name: sc-platform
     environment:
-      - FLASK_ENV=production
+      - FLASK_ENV=development
       - FLASK_APP=app.py
       - MOCK_DETECTION_RESULT=1
     ports:

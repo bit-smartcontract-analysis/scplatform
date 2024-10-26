@@ -1,4 +1,5 @@
 # Overview for Front View of smart contract platform
+
 This project aims to provide different analysis tools for smart contracts on chainmaker [link](https://chainmaker.org.cn).
 
 # Docker container for Development and Production
@@ -50,8 +51,7 @@ Linux
 
 ```
 
-=======
-
+# Manual development and production
 ## How to install on your server
 
 * You can download the zip or clone the project with git.
