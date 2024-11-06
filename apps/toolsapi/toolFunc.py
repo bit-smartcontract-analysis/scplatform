@@ -22,6 +22,7 @@ import shlex
 from werkzeug.utils import secure_filename
 import shutil
 import json
+import uuid
 
 
 bp = Blueprint("toolFunc", __name__, url_prefix="/toolFunc")
@@ -719,14 +720,8 @@ def analyzeContracts_slither():
     # # =========================================================
 
 
-    contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], filename)
-
-    try:
-        os.remove(contract_path)
-    except OSError as e:
-        # Handle the error (e.g., log it, notify someone, etc.)
-        print(f"Error: None previous contracts")
-    # Upload new contracts
+    contract_dir = current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH']
+    contract_path = os.path.join(current_app.config['TMP_CONTRACT_IMAGE_SAVE_PATH'], f"{uuid.uuid4().hex}.sol")
     file.save(contract_path)
 
     client = docker.from_env()
@@ -734,8 +729,6 @@ def analyzeContracts_slither():
     if not contract:
         return jsonify({"error": "Contract not specified"}), 400
     try:
-        host_path = project_root_path
-        contract_path = f"/data/media/tmpContracts/{contract}"
         image_name = "eddiechen1008/smartbugs-slither-snapshot:1e2685153d1b"
         image = None
 
@@ -749,7 +742,7 @@ def analyzeContracts_slither():
         if image is None:
             client.images.pull(image_name)
 
-        volumes = {host_path: {'bind': '/data', 'mode': 'rw'}}
+        volumes = {contract_dir: {'bind': contract_dir, 'mode': 'rw'}}
         command = f"slither {contract_path} --json /output.json"
         container = client.containers.create(image_name, command=command, volumes=volumes)
         start_time = time.time()
