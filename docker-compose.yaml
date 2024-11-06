@@ -5,7 +5,7 @@ services:
     privileged: true
     container_name: sc-platform
     environment:
-      - FLASK_ENV=production
+      - FLASK_ENV=development
       - FLASK_APP=app.py
       - MOCK_DETECTION_RESULT=1
     ports:
@@ -16,8 +16,16 @@ services:
       nofile:
         soft: "65536"
         hard: "65536"
-    # volumes:
+      # volumes:
       # only for developement
       # - ./:/root/sc-platform
     volumes:
-      - ./media/docker-image-registry:/var/lib/registry
+      - registry-data:/var/lib/registry
+
+volumes:
+  registry-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./media/docker-image-registry

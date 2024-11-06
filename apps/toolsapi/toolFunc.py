@@ -267,7 +267,7 @@ def run_slither_analysis():
     try:
         host_path = project_root_path
         contract_path = f"/data/media/contracts/{contract}"
-        image_name = "smartbugs/slither:latest"
+        image_name = "eddiechen1008/smartbugs-slither-snapshot:1e2685153d1b"
         image = None
 
         # Check if the image exists
@@ -736,7 +736,7 @@ def analyzeContracts_slither():
     try:
         host_path = project_root_path
         contract_path = f"/data/media/tmpContracts/{contract}"
-        image_name = "smartbugs/slither:latest"
+        image_name = "eddiechen1008/smartbugs-slither-snapshot:1e2685153d1b"
         image = None
 
         # Check if the image exists

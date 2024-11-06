@@ -1,4 +1,6 @@
 #!/bin/bash
+# WORK IN PROGRESS 
+# WARN: NOT TESTED
 
 # Check system version
 echo "Checking system version..."

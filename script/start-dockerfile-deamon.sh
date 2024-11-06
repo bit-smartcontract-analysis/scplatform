@@ -39,11 +39,11 @@ env REGISTRY_PORT=5001 docker-registry serve /etc/docker/registry/config.yml &
 
 # Pull docker image for detection 
 service docker start
-pull_image smartbugs/slither:latest &
+pull_image eddiechen1008/smartbugs-slither-snapshot:1e2685153d1b &
 pull_image weiboot/wana:v1.0 &
 
 # Initialize MySQL data directory if it doesn't exist
-service mysql stopkk
+service mysql stop
 if [ ! -d "/var/lib/mysql/mysql" ]; then
     echo 'Initializing database...'
     mysqld --initialize-insecure --user=mysql
