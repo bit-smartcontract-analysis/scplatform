@@ -1,21 +1,36 @@
 #!/bin/bash
 
 pull_image() {
-    image_name=$1
+    full_image_name=$1
 
-    # Check if the image exists in the local registry
-    result=$(curl -s http://localhost:5001/v2/_catalog | jq -r ".repositories[]" | grep "^$image_name$")
+    # Extract image name and tag/digest
+    image_name=$(echo "$full_image_name" | cut -d':' -f1)
+    image_tag=$(echo "$full_image_name" | cut -d':' -f2)
+
+    # Check if the image with this tag or digest exists in the local registry
+    result=$(curl -s "http://localhost:5001/v2/$image_name/tags/list" | jq -r ".tags[]" | grep "^$image_tag$")
 
     if [ "$result" != "" ]; then
-        echo "Pulling image $image_name from localhost:5001..."
-        docker tag localhost:5001/$image_name $image_name 
+        echo "Image $full_image_name found in localhost:5001. Pulling from local registry..."
+        docker pull localhost:5001/$full_image_name
+        docker tag localhost:5001/$full_image_name $full_image_name
     else
-        echo "Image $image_name not found in localhost:5001. Pulling from Docker Hub..."
-        docker pull $image_name
-        docker tag $image_name localhost:5001/$image_name
-        docker push localhost:5001/$image_name 
+        echo "Image $full_image_name not found in localhost:5001. Pulling from Docker Hub..."
+        docker pull $full_image_name
+        docker tag $full_image_name localhost:5001/$full_image_name
+        docker push localhost:5001/$full_image_name
     fi
 }
+
+wait_for_docker() {
+    echo "Waiting for Docker to start..."
+    while ! docker info >/dev/null 2>&1; do
+        echo "Docker is not yet available. Waiting..."
+        sleep 2
+    done
+    echo "Docker has started successfully."
+}
+
 
 # run main services
 nohup bash -c 'redis-server >> /tmp/redis.log 2>&1' >& /tmp/redis.log &
@@ -39,6 +54,7 @@ env REGISTRY_PORT=5001 docker-registry serve /etc/docker/registry/config.yml &
 
 # Pull docker image for detection 
 service docker start
+wait_for_docker
 pull_image eddiechen1008/smartbugs-slither-snapshot:1e2685153d1b &
 pull_image weiboot/wana:v1.0 &
 
