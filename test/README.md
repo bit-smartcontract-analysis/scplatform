@@ -1,4 +1,4 @@
-# ，Apifox 和 JMeter 性能测试用例构造指南
+# Apifox 和 JMeter 性能测试用例构造指南
 
 首先使用 apifox 构造请求接口，并自测：
 

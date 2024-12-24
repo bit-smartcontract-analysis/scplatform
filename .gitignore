@@ -36,8 +36,8 @@ gradle.properties
 *.xml
 media/contracts
 media/contracts
-media/tmpContracts
-media/tmpContracts
+media/tmpContracts/*
+!media/tmpContracts/.gitkeep
 media/logs/*.csv
 media/docker-image-registry
 
