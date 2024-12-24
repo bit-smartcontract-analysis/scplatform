@@ -106,9 +106,9 @@ WORKDIR /root/sc-platform
 
 # Install Docker inside a docker
 RUN mkdir -p ./script
-COPY ./script/inst-docker-ubuntu.sh ./script/inst-docker-ubuntu.sh 
-RUN sed -i 's/\r$//' ./script/inst-docker-ubuntu.sh
-RUN bash ./script/inst-docker-ubuntu.sh
+COPY ./script/install-docker-ubuntu.sh ./script/install-docker-ubuntu.sh 
+RUN sed -i 's/\r$//' ./script/install-docker-ubuntu.sh
+RUN bash ./script/install-docker-ubuntu.sh
 
 # Other source file
 COPY . ./ 
