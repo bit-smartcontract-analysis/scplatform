@@ -49,7 +49,7 @@ def execute_slither_analysis():
         host_data_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
         host_script_path = os.path.join(host_data_path, 'tools/slither/scripts')
         container_script_path = "/data/tools/slither/scripts/run_analysis.sh"
-        image_name = "smartbugs/slither:latest"
+        image_name = "eddiechen1008/smartbugs-slither-snapshot:1e2685153d1b"
         image = None
         # Check if the image exists
         for img in client.images.list():

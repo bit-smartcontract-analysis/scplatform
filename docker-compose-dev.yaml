@@ -1,0 +1,29 @@
+services:
+  sc-platform:
+    build: .
+    platform: linux/x86_64
+    privileged: true
+    container_name: sc-platform
+    environment:
+      - FLASK_ENV=development
+      - FLASK_APP=app.py
+      - MOCK_DETECTION_RESULT=1
+    ports:
+      - "5000:5000"
+      - "8080:8080"
+      - "3306:3306"
+    ulimits:
+      nofile:
+        soft: "65536"
+        hard: "65536"
+    volumes:
+      - ./:/root/sc-platform
+      - ./media/docker-image-registry:/var/lib/registry
+
+volumes:
+  registry-data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./media/docker-image-registry
