@@ -1,12 +1,19 @@
-# Smart contract Platform for Diversity Code Language
+# Smart Contract Audit Platform for Diverse Programming Languages
 
 <p>
 <img align="right" width="180"  src="./media/post/poster_sc.jpg"> 
 </p>
 
-> This project aims to provide different analysis tools for smart contracts on chainmaker [link](https://chainmaker.org.cn).
+> **Empowering Secure Smart Contract Development on ChainMaker**  
 >
-> Please let us know if you find out a mistake or have any suggestions by e-mail: weizhiyuan@bit.edu.cn
+> This project provides a comprehensive suite of auditing and analysis tools specifically designed for smart contracts deployed on the [ChainMaker](https://chainmaker.org.cn) blockchain. Our platform supports diverse programming languages, facilitating thorough and robust auditing processes to enhance smart contract security, reliability, and efficiency.
+> 
+> **Key Features:**
+>
+> - 🔍 **In-depth Static Analysis:** Identify vulnerabilities and potential risks efficiently before deployment.
+> - 🛠️ **Multi-language Support:** Seamless integration with various smart contract languages, enabling flexible audits and analysis.
+> - 📊 **Comprehensive Reports:** Generate detailed and actionable reports to simplify debugging and improve code quality.
+> - ⚙️ **Extensible Architecture:** Easily add custom analysis rules and plugins tailored to specific project requirements.
 
 # Docker container for Development and Production
 
@@ -72,6 +79,9 @@ Its better to config [dockerhub mirror](https://docs.docker.com/docker-hub/image
   ]
 ```
 
+> **Contribute & Collaborate:**  
+> Your feedback and contributions are highly appreciated! If you identify any errors, have suggestions, or wish to collaborate, please feel free to reach out to us via e-mail: [weizhiyuan@bit.edu.cn](mailto:weizhiyuan@bit.edu.cn).  
+>
 > If you find our survey useful for your research, please cite the following paper:
 
 ```bibtex
