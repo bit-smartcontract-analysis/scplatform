@@ -98,8 +98,8 @@
 
 ==========================================
 
-<p>
-<img align="right" width="180"  src="./media/post/F-478-479.png"> 
+<p style="text-align: center;">
+  <img width="400" src="./media/post/F-478-479.png">
 </p>
 
 ===========================================
