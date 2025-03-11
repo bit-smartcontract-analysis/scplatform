@@ -96,6 +96,11 @@
 * Python 3.8+
 * Flask
 
+==========================================
+
+<p>
+<img align="right" width="180"  src="./media/post/F-478-479.png"> 
+</p>
 
 ===========================================
 ## Docker container for Development and Production
