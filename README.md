@@ -1,6 +1,12 @@
-# Overview for Front View of smart contract platform
+# Smart contract Platform for Diversity Code Language
 
-This project aims to provide different analysis tools for smart contracts on chainmaker [link](https://chainmaker.org.cn).
+<p>
+<img align="right" width="180"  src="./media/post/poster_sc.jpg"> 
+</p>
+
+> This project aims to provide different analysis tools for smart contracts on chainmaker [link](https://chainmaker.org.cn).
+>
+> Please let us know if you find out a mistake or have any suggestions by e-mail: weizhiyuan@bit.edu.cn
 
 # Docker container for Development and Production
 
@@ -64,4 +70,30 @@ Its better to config [dockerhub mirror](https://docs.docker.com/docker-hub/image
     "https://dockerproxy.com",
     "https://docker.mirrors.ustc.edu.cn"
   ]
+```
+
+> If you find our survey useful for your research, please cite the following paper:
+
+```bibtex
+@article{10.1145/3695864,
+author = {Wei, Zhiyuan and Sun, Jing and Zhang, Zijian and Zhang, Xianhao and Yang, Xiaoxuan and Zhu, Liehuang},
+title = {Survey on Quality Assurance of Smart Contracts},
+year = {2024},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+issn = {0360-0300},
+url = {https://doi.org/10.1145/3695864},
+doi = {10.1145/3695864},
+note = {Just Accepted},
+journal = {ACM Comput. Surv.},
+month = {sep},
+keywords = {smart contract, security, vulnerabilities, attacks, defenses}
+}
+
+@article{wei2023comparative,
+  title={A Comparative Evaluation of Automated Analysis Tools for Solidity Smart Contracts},
+  author={Wei, Zhiyuan and Sun, Jing and Zhang, Zijian and Zhang, Xianhao and Li, Meng and Zhu, Liehuang},
+  journal={arXiv preprint arXiv:2310.20212},
+  year={2023}
+}
 ```
