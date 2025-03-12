@@ -167,7 +167,8 @@ Its better to config [dockerhub mirror](https://docs.docker.com/docker-hub/image
   ]
 ```
 
-> **Contribute & Collaborate:**  
+> **Contribute & Collaborate:**
+> This project is our main code, which we have integerated the VUE frontview. Additionall, we also open-soure our front-view project [Vue](https://github.com/bit-smartcontract-analysis/changan-SC-vue)
 > Your feedback and contributions are highly appreciated! If you identify any errors, have suggestions, or wish to collaborate, please feel free to reach out to us via e-mail: [weizhiyuan@bit.edu.cn](mailto:weizhiyuan@bit.edu.cn).  
 >
 > If you find our survey useful for your research, please cite the following paper:
