@@ -856,7 +856,7 @@ def mock_detection_result(filename):
         processData['data']['recommendList'].append("在#21-22行, 时间控制. 修复建议: 避免使用block.timestamp/block.number进行时间控制.")
 
     if "交易顺序控制.sol" in filename:
-        processData['data']['recommendList'].append("在#23-36行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
+        processData['data']['recommendList'].append("在#23, 31行, 交易顺序控制. 修复建议: 完善合约逻辑,避免他人控制交易顺序造成资金损失.")
         processData['data']['evaluate'] = '合约包含3个低风险漏洞, 1个高风险漏洞.'
 
     # Golang
