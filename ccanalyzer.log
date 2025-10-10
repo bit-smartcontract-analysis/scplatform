@@ -1,0 +1,2 @@
+2025/07/24 08:11:54 analyze.go:1037: [WARN][checkNonDetermin] This is not considered type of expr *ast.TypeAssertExpr /root/sc-platform/media/tmpContracts/analyze.go:466:22
+2025/07/24 08:11:54 analyze.go:1037: [WARN][checkNonDetermin] This is not considered type of expr *ast.MapType /root/sc-platform/media/tmpContracts/analyze.go:35:15

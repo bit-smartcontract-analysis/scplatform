@@ -5,8 +5,8 @@ FROM ubuntu:20.04@sha256:e5a6aeef391a8a9bdaee3de6b28f393837c479d8217324a2340b64e
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Replace default apt sources with Aliyun mirrors for faster downloads in China
-RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list \
-    && sed -i 's|http://security.ubuntu.com/ubuntu/|http://mirrors.aliyun.com/ubuntu/|g' /etc/apt/sources.list
+RUN sed -i 's|http://archive.ubuntu.com/ubuntu/|http://mirrors.huaweicloud.com/ubuntu/|g' /etc/apt/sources.list \
+    && sed -i 's|http://security.ubuntu.com/ubuntu/|http://mirrors.huaweicloud.com/ubuntu/|g' /etc/apt/sources.list
 
 # Update package lists
 RUN apt-get update

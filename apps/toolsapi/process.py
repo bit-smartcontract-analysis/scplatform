@@ -327,7 +327,7 @@ def process_log_ccanalyzer(raw_output):
         securityLevel = "None"
 
     # General evaluation
-    evaluate = f"需要修复{len(vulnerList)}个漏洞,请参考https://goethereumbook.org/smart-contract-deploy/"
+    evaluate = f""
 
     # Construct the JSON structure
     result = {
