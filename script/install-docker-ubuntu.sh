@@ -27,7 +27,7 @@ echo '# cat /etc/docker/daemon.json'
 echo -e '{\n   "registry-mirrors": ["https://lispy.org", "https://docker.mirrors.ustc.edu.cn"],\n    "dns": ["114.114.114.114"] \n}' | sudo tee /etc/docker/daemon.json
 
 
-# sudo chmod 666 /var/run/docker.sock
-# sudo usermod -aG docker $USER
-# sudo systemctl daemon-reload
-# sudo service docker restart
+sudo chmod 666 /var/run/docker.sock
+sudo usermod -aG docker $USER
+sudo systemctl daemon-reload
+sudo service docker restart
